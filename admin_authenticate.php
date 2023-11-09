@@ -22,8 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $salt = $row['salt'];
     
             if (verifyPassword($enteredPassword, $storedPassword, $salt)) {
-                // Password is correct, admin login successful
-                // Set a secure session and redirect to the admin control panel
+                //password goods, admin login successful
+                //start a session, only authenticated admins can cum
                 session_start();
                 $_SESSION['authenticated'] = true;
                 header('Location: admin_control_panel.php');
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Admin login failed, 
+//nooo 
 echo("Login failed");
 exit();
 

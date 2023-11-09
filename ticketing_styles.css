@@ -1,0 +1,69 @@
+body {
+  background-color: #f0f0f0;
+  padding: 20px;
+  margin: 0;
+  padding-top: 70px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 30px;
+  margin: 20px auto;
+  max-width: 50vh;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+  margin: 5px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+.container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+
+
+.bus-details-container {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+}
+
+.bus-photo-column {
+  flex: 30%;
+  margin-left: auto;
+}
+
+.bus-info-column {
+  flex: 70%;
+  padding: 10px;
+}
+
+.btn {
+  display: block;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.center-button {
+  display: block;
+  margin: 0 auto;
+  width: 40%;
+}

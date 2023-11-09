@@ -1,59 +1,64 @@
+<?php
+if (isset($_GET['status'])) {
+    $busStatus = $_GET['status'];
+    if ($busStatus == 'full') {
+        $redirectInformation = "We apologize for the inconvenience. The selected bus is already full. Please do consider booking another bus below. Thank you for your understanding.";
+    } else {
+        $redirectInformation = "We apologize for the inconvenience. Tickets for this bus are temporarily closed due to some reasons. Please do consider booking another bus below. Thank you for your understanding.";
+    }
+} else {
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="ticketing_styles.css">
+
+    <title>Bus Ticketing System - Route Selection Page</title>
     <style>
-        body {
-            background-color: #f0f0f0;
-            padding: 20px;
+        .message {
+            font-size: 14px;
+            text-align: left;
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
         }
 
-        .wrapper {
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 400px;
+        .container {
+            margin-top: 20px;
         }
 
         .btn {
             margin: 5px;
         }
 
-        label {
-            display: block;
+        .label {
             margin-top: 10px;
-            font-weight: bold;
         }
     </style>
-    <title>Bus Ticketing System - Route Selection Page</title>
 </head>
+
 <body>
     <div class="wrapper">
-        <label>North</label>
-        <button class="btn btn-primary" onclick="redirectToRouteDetail('North')">Bogo City</button>
-        <button class="btn btn-primary" onclick="redirectToRouteDetail('North')">Carmen</button>
-        <button class="btn btn-primary" onclick="redirectToRouteDetail('North')">Sogod</button>
+        <?php if (isset($_GET['status'])) : ?>
+            <div class="message border border-danger text-danger bg-light">
+                <p><?php echo $redirectInformation; ?></p>
+            </div>
+        <?php endif; ?>
 
-        <label>South</label>
-        <button class="btn btn-primary" onclick="redirectToRouteDetail('South')">Compostela</button>
-        <button class="btn btn-primary" onclick="redirectToRouteDetail('South')">Liloan</button>
-        <button class="btn btn-primary" onclick="redirectToRouteDetail('South')">Lacion</button>
-        <button class="btn btn-primary" onclick="redirectToRouteDetail('South')">Consolacion</button>
-        <button class="btn btn-primary" onclick="redirectToRouteDetail('South')">Mandaue</button>
-        <button class="btn btn-primary" onclick="redirectToRouteDetail('South')">Cebu</button>
+        <label class="display-6 text-center">Choose a route</label>
+
+        <div class="container">
+            <a href="available_buses.php?route=Going North&status=available" class="btn btn-primary">Going North</a>
+            <a href="available_buses.php?route=Going South&status=available" class="btn btn-primary">Going South</a>
+        </div>
     </div>
-
-    <script>
-    function redirectToRouteDetail(route) {
-        window.location.href = 'route_detail.php?route=' + route;
-    }
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
+
 </html>

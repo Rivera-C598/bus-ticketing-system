@@ -19,11 +19,9 @@
         </main>
     </div>
     <script>
-        // Retrieve the error code from the URL
         const urlParams = new URLSearchParams(window.location.search);
         const errorCode = urlParams.get('error');
 
-        // Display an error message based on the error code
         const errorMessageElement = document.getElementById('errorMessage');
         if (errorCode === '1') {
             errorMessageElement.textContent = 'Error 1: Something went wrong.';

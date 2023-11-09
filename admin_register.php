@@ -7,7 +7,7 @@ if (isset($_POST['username']) && isset($_POST['password']) && isset($_POST['veri
     $password = $_POST['password'];
     $verificationCode = $_POST['verification_code'];
 
-    // Check if the username already exists
+    //check if the username already exists
     $checkQuery = "SELECT COUNT(*) FROM admin_users WHERE username = :username";
     $checkStmt = $pdo->prepare($checkQuery);
     $checkStmt->bindParam(':username', $username);
@@ -20,6 +20,7 @@ if (isset($_POST['username']) && isset($_POST['password']) && isset($_POST['veri
         $theVerificationCode = "696969";
 
         if ($theVerificationCode === $verificationCode) {
+            
             $salt = generateUniqueSalt();
             $hashedPassword = hashPassword($password, $salt);
 
