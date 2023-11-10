@@ -41,7 +41,8 @@ try {
 
         <div class="container text-center py-5">
             <h2>Manage Buses</h2>
-            <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#addBusModal">Add Bus</button>
+            <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#addBusModal">Add a new bus</button>
+            <a href="admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
         </div>
 
 

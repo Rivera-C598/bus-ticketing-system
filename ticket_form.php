@@ -18,7 +18,6 @@
         if (isset($_GET['busId'])) {
             $busId = isset($_GET['busId']) ? $_GET['busId'] : '';
 
-
             $query = "SELECT * FROM buses WHERE bus_id = :busId";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':busId', $busId);
@@ -27,8 +26,6 @@
             $busDetails = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($busDetails) {
-
-
                 //bus details
                 $airConditioned = $busDetails['air_conditioned'];
                 echo '<div class="bus-details-container" style="font-size: 20px;">';
@@ -43,15 +40,19 @@
                 echo '<strong>Available slots: </strong><span id="availableSlots">Loading...</span>';
                 echo '</div>';
                 echo '</div>';
+                $airConditioned = ($busDetails['air_conditioned'] == 1) ? true : false;
+                echo '<script>';
+                echo 'var airConditioned = ' . json_encode($airConditioned) . ';';
+                echo '</script>';
 
-
-                //form for processing tickets -->
+                //form for processing tickets
                 echo '<form class="ticket-processing-form" action="process_tickets.php" method="post">';
                 echo '<h3 class="text-center">Book Tickets</h3>';
                 echo '<label for="studentId">Student ID:</label>';
                 echo '<input type="text" id="studentId" name="studentId" required maxlength="7">';
                 echo '<label for="busStop">Your Stop:</label>';
                 echo '<select id="busStop" name="busStop" required>';
+                echo '<option value="" disabled selected>Choose stop</option>'; //fdefault option
                 if (strpos($busDetails['route'], 'North') !== false) {
                     echo '<option value="Danao City">Danao City</option>';
                     echo '<option value="Carmen">Carmen</option>';
@@ -65,27 +66,22 @@
                     echo '<option value="Cebu">Cebu</option>';
                 }
                 echo '</select>';
+                echo '</select>';
                 echo '<input type="hidden" id="busId" name="busId" value="' . $busId . '">';
+                echo '<label for="fare">Fare:</label>';
+                echo '<div class="input-group flex-nowrap">';
+                echo '<div class="input-group-prepend">';
+                echo '<span class="input-group-text" id="addon-wrapping">Php</span>';
+                echo '</div>';
+                echo '<input type="text" id="fare" name="fare" value="" readonly>';
+                echo '</div>';
+                echo '<button type="submit" class="btn btn-primary center-button">Confirm & submit</button>';
+                echo '</form>';
             }
-        }else {
+        } else {
             echo 'bus Id not found';
         }
-
-
-
         ?>
-        <label for="fare">Fare:</label>
-        <div class="input-group flex-nowrap">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="addon-wrapping">Php</span>
-            </div>
-            <input type="text" id="fare" name="fare" value="10.00" readonly>
-        </div>
-
-        <button type="submit" class="btn btn-primary center-button">Confirm & submit</button>
-
-        </form>
-
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
@@ -110,13 +106,12 @@
             });
         }
 
-        setInterval(updateAvailableSlots, 3000); //3 sekuz update
+        setInterval(updateAvailableSlots, 3000); //2 sekus update
     </script>
 
     <script>
         var busStopDropdown = document.getElementById('busStop');
         var fareInput = document.getElementById('fare');
-
 
         var fares = {
             'Compostela': 10.00,
@@ -132,11 +127,14 @@
 
         busStopDropdown.addEventListener('change', function() {
             var selectedOption = busStopDropdown.value;
-            if (fares.hasOwnProperty(selectedOption)) {
-                fareInput.value = fares[selectedOption].toFixed(2);
-            } else {
-                fareInput.value = '10.00'; //default value
-            }
+
+            //dafault to nothin if value is nothin
+            var baseFare = selectedOption === '' ? 0.00 : (fares[selectedOption] || 10.00);
+
+            //if airConditioned true, add 10.00 to the base fare hehe
+            var finalFare = airConditioned ? baseFare + 10.00 : baseFare;
+
+            fareInput.value = finalFare.toFixed(2);
         });
 
         document.addEventListener("DOMContentLoaded", function() {

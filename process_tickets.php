@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $busPlateNum = $busDetails['plate_number'];
         $capacity = $busDetails['capacity'];
         $confirmedTickets = $busDetails['confirmed_tickets'];
+        $isAirConditioned = $busDetails['air_conditioned'];
     }
 
     //get form data
@@ -24,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fare = $_POST['fare'];
 
     //define fares for sserver side verification
-    $fares = [
+    $baseFares = [
         'Compostela' => 10.00,
         'Liloan' => 20.00,
         'Consolacion' => 30.00,
@@ -35,6 +36,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'Catmon' => 30.00,
         'Sogod' => 40.00
     ];
+
+    // Adjust fares based on air-conditioning
+    if ($isAirConditioned) {
+        foreach ($baseFares as &$baseFare) {
+            $baseFare += 10.00; // Add 10.00 to each base fare
+        }
+    }
+
+
 
     if ($confirmedTickets < $capacity) {
         if ($busDetails['status'] == "available") {
@@ -109,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($timeElapsed >= $cooldownPeriod) {
                         // If cooldown period has passed, we proceed with new booking
 
-                        if (array_key_exists($stop, $fares) && $fares[$stop] == $fare) {
+                        if (array_key_exists($stop, $baseFares) && $baseFares[$stop] == $fare) {
                             //generate ticket
                             $ticketCode = generateUniqueTicketCode();
                             $status = 'unpaid';

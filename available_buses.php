@@ -55,61 +55,7 @@
     echo "</div>";
     ?>
 
-    <script>
-        document.addEventListener('click', function(event) {
-            if (event.target && event.target.getAttribute('data-bus-id')) {
-                var busId = event.target.getAttribute('data-bus-id');
-                openBusDetailsModal(busId);
-            }
-        });
-
-        //function to open the modal and fetch bus details
-        function openBusDetailsModal(busId) {
-            var modal = document.getElementById('busDetailsModal');
-            modal.style.display = 'block';
-
-            fetch('get_bus_details.php?busId=' + busId)
-                .then(function(response) {
-                    return response.text();
-                })
-                .then(function(data) {
-                    var busDetailsContent = document.getElementById('busDetailsContent');
-                    busDetailsContent.innerHTML = data;
-                })
-                .catch(function(error) {
-                    console.error('Error fetching bus details: ' + error);
-                });
-        }
-
-
-        document.addEventListener('click', function(event) {
-            if (event.target && event.target.id === 'closeModal') {
-                var modal = document.getElementById('busDetailsModal');
-                modal.style.display = 'none';
-            }
-        });
-    </script>
-
-
-    <div class="modal fade" id="busDetailsModal" tabindex="-1" aria-labelledby="busDetailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="busDetailsModalLabel">Bus Details</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div id="busDetailsContent">
-
-                    </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 

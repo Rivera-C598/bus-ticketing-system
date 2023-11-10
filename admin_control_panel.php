@@ -5,6 +5,7 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     exit();
 }
 
+
 include 'db_config.php';
 
 date_default_timezone_set('Asia/Manila');
@@ -47,12 +48,21 @@ try {
         .badge.text-bg-secondary {
             background-color: orange;
             color: black;
-            /* Set text color to white for contrast */
+        }
+
+        #summaryModal .modal-body {
+            max-height: 60vh;
+            /* Set a maximum height, adjust as needed */
+            overflow-y: auto;
+            /* Enable vertical scrolling */
         }
     </style>
 </head>
 
 <body>
+
+
+    <!-- Content -->
     <div class="wrapper">
         <header class="bg-primary text-white text-center py-5">
             <div class="container">
@@ -64,33 +74,28 @@ try {
             <section id="admin-panel" class="mb-4 px-3">
                 <div class="container text-center">
                     <div class="row">
-                        <div class="col-md-6">
-                            <a href="manage_buses.php" class="btn btn-primary btn-lg btn-block">
-                                Manage Buses
-                            </a>
-                            <a class="btn btn-success btn-lg btn-block" data-bs-toggle="modal" data-bs-target="#ticketModal">
-                                + Tickets
-                            </a>
+                        <div class="col-lg-4 mb-4">
+                            <a class="btn btn-success btn-lg btn-block" href="#" data-bs-toggle="modal" data-bs-target="#ticketModal">Create Bus Tickets</a>
                         </div>
-                        <div class="col-md-6">
-                            <a href="transactions.php" class="btn btn-primary btn-lg btn-block">Transaction history</a>
-                            <a href="students.php" class="btn btn-primary btn-lg btn-block">Student reference</a>
-                            <a href="admin_logout.php" class="btn btn-danger btn-lg btn-block">Log out</a>
+                        <div class="col-lg-8 mb-4">
+                            <a href="manage_buses.php" class="btn btn-outline-primary btn-md mr-2">Manage Buses</a>
+                            <a href="transactions.php" class="btn btn-outline-primary btn-md mr-2">Transaction history</a>
+                            <a href="students.php" class="btn btn-outline-primary btn-md mr-2">Student reference</a>
+                            <a href="admin_logout.php" class="btn btn-outline-danger btn-md">Log out</a>
                         </div>
                     </div>
+
 
                     <!-- tobol container -->
                     <div class="container mt-5">
                         <div class="row">
                             <h2 class="text-center">Bookings</h2>
-
-                            <!-- search bar -->
+                            <!-- search -->
                             <div class="input-group py-3">
                                 <input type="text" class="form-control" id="searchInput" placeholder="Search...">
                             </div>
-
                             <div class="col-lg-12">
-                                <!-- table start -->
+                                <!-- table -->
                                 <table class="table table-bordered" id="bookingsTable">
                                     <thead>
                                         <tr>
@@ -152,8 +157,7 @@ try {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="generateTicketsBtn">Generate</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id='ticketModalCloseBtn'>Close</button>
                 </div>
             </div>
         </div>
@@ -185,6 +189,42 @@ try {
             </div>
         </div>
     </div>
+
+    <!-- summary modal -->
+    <div class="modal fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="summaryModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="summaryModalLabel">Ticket Summary</h5>
+                </div>
+                <div class="modal-body" id="summaryBody">
+                    <!-- latur again -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="summaryModalCloseBtn">Hide</button>
+                    <button type="button" class="btn btn-primary" id="confirmPrintButton">Confirm Payment & Print</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- success modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Success</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center">YAHOO</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="okButton">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 
@@ -290,8 +330,8 @@ try {
 
             //route selection first
             $('#route').change(function() {
+                isStudentVerificationOn = true;
                 routeSelection = $(this).val();
-                form.empty();
 
                 if (routeSelection === 'ChooseRoute') {
                     form.hide();
@@ -314,7 +354,6 @@ try {
                     //when route is changed, empty previous shit
                     var busDropdown = $('#busSelection');
 
-                    //ajax 
                     $.ajax({
                         url: 'get_available_buses.php',
                         method: 'GET',
@@ -347,8 +386,12 @@ try {
                     });
 
                     var busDetailsContainer;
+                    var busAirconditioned;
+                    var busId;
+                    var busPlateNumber;
 
                     $('#busSelection').change(function() {
+                        isStudentVerificationOn = true;
 
                         var schoolIdStopContainer = $('#schoolIdStopContainer');
 
@@ -356,8 +399,7 @@ try {
                         schoolIdStopContainer.empty();
 
                         var busDetails = $('#busDetails');
-                        var busId = $(this).val();
-
+                        busId = $(this).val();
 
                         $.ajax({
                             url: 'get_bus_combo.php',
@@ -390,17 +432,28 @@ try {
 
                                 busDetailsContainer.append($('<p>', {
                                     class: 'text-center',
-                                    text: 'Plate Number: ' + busData.plate_number
+                                    text: 'Plate Number: ' + busData.plate_number,
+                                    id: 'busPlateNumber'
                                 }));
+                                busPlateNumber = busData.plate_number;
                                 busDetailsContainer.append($('<p>', {
                                     class: 'text-center',
 
                                     text: 'Driver Name: ' + busData.bus_driver_name
                                 }));
+
+                                busDetailsContainer.append($('<p>', {
+                                    class: 'text-center',
+                                    id: 'busAirconditioned',
+                                    text: 'Airconditioned: ' + (busData.air_conditioned ? 'Yes' : 'No')
+                                }));
+
+                                busAirconditioned = busData.air_conditioned;
+
                                 busDetailsContainer.append($('<p>', {
                                     class: 'text-center',
                                     id: 'busAvailableSlots',
-                                    text: 'Available Slots: ' + busData.available_slots
+                                    text: 'Loading...'
                                 }));
 
                                 var ticketCountContainer = $('<div>', {
@@ -445,8 +498,31 @@ try {
                             }
                         });
 
+                        function updateAvailableSlots() {
+                            $.ajax({
+                                url: 'get_available_slots.php',
+                                type: 'GET',
+                                dataType: 'json',
+                                data: {
+                                    busId: busId
+                                },
+                                success: function(response) {
+                                    if (response.hasOwnProperty('availableSlots')) {
+                                        $('#busAvailableSlots').text('Available Slots: ' + response.availableSlots);
+                                    }
+                                },
+                                error: function() {
+                                    $('#availableSlots').text('N/A');
+                                }
+                            });
+                        }
+
+                        setInterval(updateAvailableSlots, 5000);
+
 
                     });
+
+
 
 
                     var schoolIdStopContainer = $('<div>', {
@@ -458,7 +534,6 @@ try {
                     var ticketForm = $('<form>', {
                         id: 'ticketForm',
                     });
-
 
 
                     var labelAndToggleVerificationBtnContainer = $('<div>', {
@@ -509,7 +584,7 @@ try {
                         'Sogod': 40.00
                     };
 
-                    // Modify the fare dictionary if the bus is air-conditioned
+                    //modify e fare dictionary if bus is tugnaw
                     /*if (busIsAirConditioned) {
                         fareDictionary = {
                             'Danao': 15.00,
@@ -524,18 +599,26 @@ try {
 
                     $(document).on('click', '#startLoopBtn', function() {
 
+                        var emptySchoolIdStopContainer = $('#schoolIdStopContainer');
+                        var available_seats_error = $('#available_seats_error');
+
                         //show ticket form
                         var ticketCount = $('#ticketCountInput').val();
                         ticketCount = ticketCount.replace(/^0+/, '');
                         ticketCount = ticketCount.split('.')[0];
 
-                        var emptySchoolIdStopContainer = $('#schoolIdStopContainer');
-                        var available_seats_error = $('#available_seats_error');
+                        $('#confirmButton').prop('disabled', true);
+                        $('#toggleStudentVerification').removeClass('btn-danger').addClass('btn-success').text('Verification On');
+                        isStudentVerificationOn = true;
+                        currentTicketIndex = 0;
+                        ticketData = [];
 
                         confirmBtn.empty();
                         schoolIdLabelDiv.empty();
                         splitFareDiv.empty();
                         ticketForm.empty();
+
+
 
                         if (ticketCount <= busAvailableSlots && ticketCount > 0) {
 
@@ -546,7 +629,8 @@ try {
                                 ticketCountContainer.hide();
                                 available_seats_error.hide();
                                 emptySchoolIdStopContainer.empty();
-                                $('#schoolIdStopContainer').show();
+
+                                schoolIdStopContainer.show();
 
                                 schoolIdLabelDiv.append($('<label>', {
                                     for: 'schoolIdInput',
@@ -569,10 +653,32 @@ try {
                                     class: 'form-control',
                                     id: 'schoolIdInput',
                                     name: 'schoolIdInput',
-                                    placeholder: 'Enter school ID'
+                                    placeholder: 'Enter school ID',
+                                    required: true
                                 });
 
+                                var studentExistingBookingStatus = $('<input>', {
+                                    type: 'text',
+                                    id: 'studentExistingBookingStatus',
+                                    name: 'studentExistingBookingStatus',
+                                    hidden: true
+                                })
+
+                                var hasPassedCooldownStatus = $('<input>', {
+                                    type: 'text',
+                                    hidden: true,
+                                    id: 'hasPassedCooldownStatus',
+                                    name: 'hasPassedCooldownStatus'
+                                })
+
                                 ticketForm.append(schoolIdInput);
+                                ticketForm.append($('<p>', {
+                                    id: 'hasNotPassedCooldownPeriodErrorMessage',
+                                    text: '',
+                                    style: 'color: red;'
+                                }))
+                                ticketForm.append(studentExistingBookingStatus);
+                                ticketForm.append(hasPassedCooldownStatus);
 
                                 ticketForm.append($('<label>', {
                                     for: 'stopSelection',
@@ -582,7 +688,8 @@ try {
                                 var stopSelection = $('<select>', {
                                     id: 'stopSelection',
                                     name: 'stopSelection',
-                                    class: 'form-control'
+                                    class: 'form-control',
+                                    required: true
                                 })
 
                                 stopSelection.append($('<option>', {
@@ -680,13 +787,36 @@ try {
                                                 schoolId: schoolId
                                             },
                                             success: function(response) {
-                                                var responseData = JSON.parse(response);
-                                                if (responseData.exists) {
-                                                    $('#confirmButton').prop('disabled', false);
+                                                var responseData = response;
+                                                if (responseData.schoolIdExists) {
 
+                                                    //if school id exissts
+                                                    if (responseData.lastRequestStatus) {
+
+                                                        if (responseData.passedCooldownPeriod) {
+                                                            //good to go
+                                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                                            $('#studentExistingBookingStatus').val('true');
+                                                            $('#hasPassedCooldownStatus').val('true');
+                                                            $('#confirmButton').prop('disabled', false);
+                                                        } else {
+                                                            //if student has not yet passed last request cooldown status
+                                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('this schoolId already has made a request for tha past 2 hours, please check bookings table');
+                                                            // disable confirm button
+                                                            $('#confirmButton').prop('disabled', true);
+                                                        }
+
+                                                    } else {
+                                                        //theres no last reqesut, set to false
+                                                        $('#studentExistingBookingStatus').val('false');
+                                                        //enable button cuz this must be student first tiem request
+                                                        $('#confirmButton').prop('disabled', false);
+                                                    }
                                                 } else {
+                                                    //school id not exist
+                                                    $('#studentExistingBookingStatus').val('');
+                                                    //so disable
                                                     $('#confirmButton').prop('disabled', true);
-
                                                 }
                                             },
                                             error: function() {}
@@ -696,6 +826,7 @@ try {
                                 }
 
                                 $('#toggleStudentVerification').on('click', function() {
+                                    $('#hasNotPassedCooldownPeriodErrorMessage').text('');
                                     var schoolIdLabel = $('label[for="schoolIdInput"]');
                                     var schoolIdInput = $('#schoolIdInput');
 
@@ -725,11 +856,31 @@ try {
                                                 schoolId: schoolId
                                             },
                                             success: function(response) {
-                                                var responseData = JSON.parse(response);
-                                                if (responseData.exists) {
-                                                    $('#confirmButton').prop('disabled', false);
+                                                var responseData = response;
+                                                if (responseData.schoolIdExists) {
+
+                                                    // School ID exists
+                                                    if (responseData.lastRequestStatus) {
+
+                                                        if (responseData.passedCooldownPeriod) {
+                                                            //good to go
+                                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                                            $('#studentExistingBookingStatus').val('true');
+                                                            $('#hasPassedCooldownStatus').val('true');
+                                                            $('#confirmButton').prop('disabled', false);
+                                                        } else {
+                                                            //if student has not yet passed last request cooldown status
+                                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('this schoolId already has made a request for tha past 2 hours, please check bookings table');
+                                                            // disable confirm button
+                                                            $('#confirmButton').prop('disabled', true);
+                                                        }
+
+                                                    } else {
+                                                        $('#studentExistingBookingStatus').val('false');
+                                                        $('#confirmButton').prop('disabled', false);
+                                                    }
                                                 } else {
-                                                    console.log(isStudentVerificationOn);
+                                                    $('#studentExistingBookingStatus').val('');
                                                     $('#confirmButton').prop('disabled', true);
                                                 }
                                             },
@@ -748,11 +899,30 @@ try {
                                                     schoolId: schoolId
                                                 },
                                                 success: function(response) {
-                                                    var responseData = JSON.parse(response);
-                                                    if (responseData.exists) {
-                                                        $('#confirmButton').prop('disabled', false);
+                                                    var responseData = response;
+                                                    if (responseData.schoolIdExists) {
+
+                                                        if (responseData.lastRequestStatus) {
+
+                                                            if (responseData.passedCooldownPeriod) {
+                                                                //good to go
+                                                                $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                                                $('#studentExistingBookingStatus').val('true');
+                                                                $('#hasPassedCooldownStatus').val('true');
+                                                                $('#confirmButton').prop('disabled', false);
+                                                            } else {
+                                                                //if student has not yet passed last request cooldown status
+                                                                $('#hasNotPassedCooldownPeriodErrorMessage').text('this schoolId already has made a request for tha past 2 hours, please check bookings table');
+                                                                // disable confirm button
+                                                                $('#confirmButton').prop('disabled', true);
+                                                            }
+
+                                                        } else {
+                                                            $('#studentExistingBookingStatus').val('false');
+                                                            $('#confirmButton').prop('disabled', false);
+                                                        }
                                                     } else {
-                                                        console.log(isStudentVerificationOn);
+                                                        $('#studentExistingBookingStatus').val('');
                                                         $('#confirmButton').prop('disabled', true);
                                                     }
                                                 },
@@ -771,11 +941,15 @@ try {
                                     var selectedStop = $(this).val();
                                     var fareInput = $('#fare');
 
-                                    //lookup the fare from fare dictionary based on the selected stop
-                                    var fare = fareDictionary[selectedStop];
+                                    console.log(busAirconditioned);
+                                    //check fare input if fare input in fare dicktionary
+                                    var baseFare = fareDictionary[selectedStop] || 0.00; // Default to 0.00 if fare not found
 
-                                    //update with correspoding fare
-                                    fareInput.val(fare);
+                                    //if air conditioned add 10
+                                    var finalFare = busAirconditioned ? baseFare + 10.00 : baseFare;
+
+                                    //update fare input
+                                    fareInput.val(finalFare.toFixed(2));
                                 });
 
                                 $('#cancelButton').on('click', function() {
@@ -784,6 +958,7 @@ try {
                                     ticketData = [];
                                     schoolIdStopContainer.hide();
                                     $('#ticketCountInput').val('');
+
                                     ticketCountContainer.show();
 
                                 })
@@ -791,64 +966,143 @@ try {
 
                                 //confirm button clicked
                                 $('#confirmButton').on('click', function() {
+                                    $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+
                                     var schoolIdInput = $('#schoolIdInput');
                                     var schoolId = $('#schoolIdInput').val();
                                     var stop = $('#stopSelection').val();
                                     var fare = $('#fare').val();
+                                    var lastBookingStatus = $('#studentExistingBookingStatus').val();
+                                    console.log(lastBookingStatus);
                                     var ticketCount = $('#ticketCountInput').val();
-                                    console.log(stop);
+                                    const ticketCode = generateUniqueTicketCode();
 
                                     if (schoolId.trim() !== '' && stop != null) {
-                                        //collect data, store in array first
-                                        ticketData.push({
-                                            schoolId: schoolId,
-                                            stop: stop,
-                                            fare: fare,
-                                            verifyStudent: isStudentVerificationOn
-                                        });
+                                        //dpt di magbalik2 ang id or name gi enter
+                                        if (!isStudentIdRepeated(schoolId)) {
+                                            //collect data, store in array first
+                                            ticketData.push({
+                                                ticketCode: ticketCode,
+                                                busPlateNumber: busPlateNumber,
+                                                schoolId: schoolId,
+                                                stop: stop,
+                                                fare: fare,
+                                                isStudentVerified: isStudentVerificationOn,
+                                                lastBookingStatus: lastBookingStatus
+                                            });
 
-                                        //increment currentTicketindex
-                                        currentTicketIndex++;
+                                            //increment
+                                            currentTicketIndex++;
 
-                                        //check if accurate data
-                                        console.log(ticketData);
+                                            //clear, get ready for next iteration
+                                            schoolIdInput.val('');
+                                            $('#stopSelection').val('');
+                                            $('#fare').val('');
 
-                                        //clear schoolIdInput field and stopSelection
-                                        schoolIdInput.val('');
-                                        $('#stopSelection').val('');
-                                        $('#fare').val('');
+                                            if (currentTicketIndex >= ticketCount) {
+                                                if (ticketData.length > 0) {
+                                                    //pupulate summry content
+                                                    var summaryContent;
+                                                    for (var i = 0; i < ticketData.length; i++) {
+                                                        var ticket = ticketData[i];
+                                                        summaryContent += '<p><strong>Ticket Code:</strong> ' + ticket.ticketCode + '</p>';
+                                                        summaryContent += '<p><strong>Bus Plate number:</strong> ' + ticket.busPlateNumber + '</p>';
+                                                        summaryContent += '<p><strong>School ID / Name:</strong> ' + ticket.schoolId + '</p>';
+                                                        summaryContent += '<p><strong>Stop:</strong> ' + ticket.stop + '</p>';
+                                                        summaryContent += '<p><strong>Fare:</strong> ' + ticket.fare + '</p>';
+                                                        summaryContent += '<hr>';
+                                                    }
 
-                                        if (currentTicketIndex >= ticketCount) {
+                                                    //set summary content to summary bodeh
+                                                    $('#summaryBody').html(summaryContent);
 
-                                            currentTicketIndex = 0;
-                                            ticketData = [];
-                                            schoolIdStopContainer.hide();
-                                            ticketCountContainer.show();
-                                            currentTicketIndex = 0;
-                                            $('#ticketCountInput').val('');
+                                                    //show modal
+                                                    $('#ticketModal').modal('hide');
+                                                    $('#summaryModal').modal('show');
+                                                } else {
+                                                    console.log('No ticket data to display.');
+                                                }
 
 
-                                            //when all is don, we do somthing
-                                            //TODO: show summary form and generate ticket button.
-
-                                            console.log('done');
-
+                                            } else {
+                                                $('#ticketCountBadge').text(ticketCount - currentTicketIndex);
+                                            }
                                         } else {
-                                            $('#ticketCountBadge').text(ticketCount - currentTicketIndex);
+                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('Student ID already entered.');
                                         }
                                     } else {
-                                        console.log('School ID and Stop cannot be empty.');
+                                        $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                        $('#hasNotPassedCooldownPeriodErrorMessage').text('School ID or Stop cannot be empty.');
                                     }
-
-
                                 });
 
+                                //check if the student ID is repeated
+                                function isStudentIdRepeated(newStudentId) {
+                                    return ticketData.some(ticket => ticket.schoolId === newStudentId);
+                                }
+
+                                function generateUniqueTicketCode() {
+                                    const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                                    const codeLength = 8;
+
+                                    let ticketCode;
+                                    let codeExistsInTickets;
+
+                                    do {
+                                        ticketCode = '';
+                                        for (let i = 0; i < codeLength; i++) {
+                                            ticketCode += characters.charAt(Math.floor(Math.random() * characters.length));
+                                        }
+
+                                        codeExistsInTickets = checkCodeInTickets(ticketCode);
+                                    } while (codeExistsInTickets);
+
+                                    return ticketCode;
+                                }
+
+                                function checkCodeInTickets(code) {
+                                    //check if ticketcode in my array
+                                    return ticketData.some(ticket => ticket.ticketCode === code);
+                                }
+
+
+                                $('#confirmPrintButton').on('click', function() {
+                                    if (ticketData.length > 0) {
+                                        console.log('theres ticketData')
+                                        $.ajax({
+                                            url: 'admin_process_tickets.php',
+                                            type: 'POST',
+                                            data: {
+                                                ticketData: JSON.stringify(ticketData)
+                                            },
+                                            success: function(response) {
+                                                $('#successModal').modal('show');
+                                            },
+                                            error: function(error) {
+                                                console.error(error);
+                                            }
+                                        });
+
+                                        currentTicketIndex = 0;
+                                        ticketData = [];
+                                        schoolIdStopContainer.hide();
+                                        ticketCountContainer.show();
+                                        $('#ticketCountInput').val('');
+                                        $('#studentExistingBookingStatus').val('');
+                                        $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+
+
+                                        $('#summaryModal').modal('hide');
+                                    } else {
+                                        console.log('No ticket data to confirm and print.');
+
+                                    }
+
+                                    //close modal
+                                    $('#summaryModal').modal('hide');
+                                });
                             }
-
-
-
-
-
 
                         } else {
 
@@ -900,7 +1154,6 @@ try {
                     //when route is changed, empty previous shit
                     var busDropdown = $('#busSelection');
 
-                    //ajax 
                     $.ajax({
                         url: 'get_available_buses.php',
                         method: 'GET',
@@ -933,8 +1186,17 @@ try {
                     });
 
                     var busDetailsContainer;
+                    var busAirconditioned;
+                    var busId;
+                    var busPlateNumber;
+                    var schoolIdStopContainer = $('<div>', {
+                        id: 'schoolIdStopContainer',
+                        class: 'form-group',
+                        style: 'border: solid 1px #ccc; padding: 8px'
+                    });
 
                     $('#busSelection').change(function() {
+                        isStudentVerificationOn = true;
 
                         var schoolIdStopContainer = $('#schoolIdStopContainer');
 
@@ -942,8 +1204,7 @@ try {
                         schoolIdStopContainer.empty();
 
                         var busDetails = $('#busDetails');
-                        var busId = $(this).val();
-
+                        busId = $(this).val();
 
                         $.ajax({
                             url: 'get_bus_combo.php',
@@ -976,17 +1237,28 @@ try {
 
                                 busDetailsContainer.append($('<p>', {
                                     class: 'text-center',
-                                    text: 'Plate Number: ' + busData.plate_number
+                                    text: 'Plate Number: ' + busData.plate_number,
+                                    id: 'busPlateNumber'
                                 }));
+                                busPlateNumber = busData.plate_number;
                                 busDetailsContainer.append($('<p>', {
                                     class: 'text-center',
 
                                     text: 'Driver Name: ' + busData.bus_driver_name
                                 }));
+
+                                busDetailsContainer.append($('<p>', {
+                                    class: 'text-center',
+                                    id: 'busAirconditioned',
+                                    text: 'Airconditioned: ' + (busData.air_conditioned ? 'Yes' : 'No')
+                                }));
+
+                                busAirconditioned = busData.air_conditioned;
+
                                 busDetailsContainer.append($('<p>', {
                                     class: 'text-center',
                                     id: 'busAvailableSlots',
-                                    text: 'Available Slots: ' + busData.available_slots
+                                    text: 'Loading...'
                                 }));
 
                                 var ticketCountContainer = $('<div>', {
@@ -1031,20 +1303,38 @@ try {
                             }
                         });
 
+                        function updateAvailableSlots() {
+                            $.ajax({
+                                url: 'get_available_slots.php',
+                                type: 'GET',
+                                dataType: 'json',
+                                data: {
+                                    busId: busId
+                                },
+                                success: function(response) {
+                                    if (response.hasOwnProperty('availableSlots')) {
+                                        $('#busAvailableSlots').text('Available Slots: ' + response.availableSlots);
+                                    }
+                                },
+                                error: function() {
+                                    $('#availableSlots').text('N/A');
+                                }
+                            });
+                        }
+
+                        setInterval(updateAvailableSlots, 5000);
+
 
                     });
 
 
-                    var schoolIdStopContainer = $('<div>', {
-                        id: 'schoolIdStopContainer',
-                        class: 'form-group',
-                        style: 'border: solid 1px #ccc; padding: 8px'
-                    });
+
+
+                    
 
                     var ticketForm = $('<form>', {
                         id: 'ticketForm',
                     });
-
 
 
                     var labelAndToggleVerificationBtnContainer = $('<div>', {
@@ -1089,39 +1379,38 @@ try {
                     });
 
                     var fareDictionary = {
-                        'Danao': 10.00,
-                        'Carmen': 20.00,
-                        'Catmon': 30.00,
-                        'Sogod': 40.00
+                        'Compostela': 10.00,
+                        'Liloan': 20.00,
+                        'Consolacion': 30.00,
+                        'Mandaue': 40.00,
+                        'Cebu': 50.00
                     };
-
-                    // Modify the fare dictionary if the bus is air-conditioned
-                    /*if (busIsAirConditioned) {
-                        fareDictionary = {
-                            'Danao': 15.00,
-                            'Carmen': 25.00,
-                            'Catmon': 35.00,
-                            'Sogod': 45.00
-                        };
-                    }*/
 
                     var ticketData = [];
                     var currentTicketIndex = 0;
 
                     $(document).on('click', '#startLoopBtn', function() {
 
+                        var emptySchoolIdStopContainer = $('#schoolIdStopContainer');
+                        var available_seats_error = $('#available_seats_error');
+
                         //show ticket form
                         var ticketCount = $('#ticketCountInput').val();
                         ticketCount = ticketCount.replace(/^0+/, '');
                         ticketCount = ticketCount.split('.')[0];
 
-                        var emptySchoolIdStopContainer = $('#schoolIdStopContainer');
-                        var available_seats_error = $('#available_seats_error');
+                        $('#confirmButton').prop('disabled', true);
+                        $('#toggleStudentVerification').removeClass('btn-danger').addClass('btn-success').text('Verification On');
+                        isStudentVerificationOn = true;
+                        currentTicketIndex = 0;
+                        ticketData = [];
 
                         confirmBtn.empty();
                         schoolIdLabelDiv.empty();
                         splitFareDiv.empty();
                         ticketForm.empty();
+
+
 
                         if (ticketCount <= busAvailableSlots && ticketCount > 0) {
 
@@ -1132,7 +1421,8 @@ try {
                                 ticketCountContainer.hide();
                                 available_seats_error.hide();
                                 emptySchoolIdStopContainer.empty();
-                                $('#schoolIdStopContainer').show();
+
+                                schoolIdStopContainer.show();
 
                                 schoolIdLabelDiv.append($('<label>', {
                                     for: 'schoolIdInput',
@@ -1155,10 +1445,32 @@ try {
                                     class: 'form-control',
                                     id: 'schoolIdInput',
                                     name: 'schoolIdInput',
-                                    placeholder: 'Enter school ID'
+                                    placeholder: 'Enter school ID',
+                                    required: true
                                 });
 
+                                var studentExistingBookingStatus = $('<input>', {
+                                    type: 'text',
+                                    id: 'studentExistingBookingStatus',
+                                    name: 'studentExistingBookingStatus',
+                                    hidden: true
+                                })
+
+                                var hasPassedCooldownStatus = $('<input>', {
+                                    type: 'text',
+                                    hidden: true,
+                                    id: 'hasPassedCooldownStatus',
+                                    name: 'hasPassedCooldownStatus'
+                                })
+
                                 ticketForm.append(schoolIdInput);
+                                ticketForm.append($('<p>', {
+                                    id: 'hasNotPassedCooldownPeriodErrorMessage',
+                                    text: '',
+                                    style: 'color: red;'
+                                }))
+                                ticketForm.append(studentExistingBookingStatus);
+                                ticketForm.append(hasPassedCooldownStatus);
 
                                 ticketForm.append($('<label>', {
                                     for: 'stopSelection',
@@ -1168,7 +1480,8 @@ try {
                                 var stopSelection = $('<select>', {
                                     id: 'stopSelection',
                                     name: 'stopSelection',
-                                    class: 'form-control'
+                                    class: 'form-control',
+                                    required: true
                                 })
 
                                 stopSelection.append($('<option>', {
@@ -1179,23 +1492,28 @@ try {
                                 }));
 
                                 stopSelection.append($('<option>', {
-                                    value: 'Danao',
-                                    text: 'Danao'
+                                    value: 'Compostela',
+                                    text: 'Compostela'
                                 }));
 
                                 stopSelection.append($('<option>', {
-                                    value: 'Carmen',
-                                    text: 'Carmen'
+                                    value: 'Liloan',
+                                    text: 'Liloan'
                                 }));
 
                                 stopSelection.append($('<option>', {
-                                    value: 'Catmon',
-                                    text: 'Catmon'
+                                    value: 'Consolacion',
+                                    text: 'Consolacion'
                                 }));
 
                                 stopSelection.append($('<option>', {
-                                    value: 'Sogod',
-                                    text: 'Sogod'
+                                    value: 'Mandaue',
+                                    text: 'Mandaue'
+                                }));
+
+                                stopSelection.append($('<option>', {
+                                    value: 'Cebu',
+                                    text: 'Cebu'
                                 }));
 
                                 ticketForm.append(stopSelection);
@@ -1216,11 +1534,6 @@ try {
 
                                 splitFareDiv.append(fare);
 
-
-                                /*splitFareDiv.append($('<span>', {
-                                    class: 'input-group-text',
-                                    text: 'Total Fare:'
-                                }));*/
                                 var totalFare = $('<input>', {
                                     type: 'text',
                                     class: 'form-control',
@@ -1253,8 +1566,6 @@ try {
 
                                 busDetailsContainer.append(schoolIdStopContainer);
 
-
-
                                 if (isStudentVerificationOn) {
                                     $('#schoolIdInput').on('keyup', function() {
                                         var schoolId = $('#schoolIdInput').val();
@@ -1266,13 +1577,36 @@ try {
                                                 schoolId: schoolId
                                             },
                                             success: function(response) {
-                                                var responseData = JSON.parse(response);
-                                                if (responseData.exists) {
-                                                    $('#confirmButton').prop('disabled', false);
+                                                var responseData = response;
+                                                if (responseData.schoolIdExists) {
 
+                                                    //if school id exissts
+                                                    if (responseData.lastRequestStatus) {
+
+                                                        if (responseData.passedCooldownPeriod) {
+                                                            //good to go
+                                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                                            $('#studentExistingBookingStatus').val('true');
+                                                            $('#hasPassedCooldownStatus').val('true');
+                                                            $('#confirmButton').prop('disabled', false);
+                                                        } else {
+                                                            //if student has not yet passed last request cooldown status
+                                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('this schoolId already has made a request for tha past 2 hours, please check bookings table');
+                                                            // disable confirm button
+                                                            $('#confirmButton').prop('disabled', true);
+                                                        }
+
+                                                    } else {
+                                                        //theres no last reqesut, set to false
+                                                        $('#studentExistingBookingStatus').val('false');
+                                                        //enable button cuz this must be student first tiem request
+                                                        $('#confirmButton').prop('disabled', false);
+                                                    }
                                                 } else {
+                                                    //school id not exist
+                                                    $('#studentExistingBookingStatus').val('');
+                                                    //so disable
                                                     $('#confirmButton').prop('disabled', true);
-
                                                 }
                                             },
                                             error: function() {}
@@ -1282,6 +1616,7 @@ try {
                                 }
 
                                 $('#toggleStudentVerification').on('click', function() {
+                                    $('#hasNotPassedCooldownPeriodErrorMessage').text('');
                                     var schoolIdLabel = $('label[for="schoolIdInput"]');
                                     var schoolIdInput = $('#schoolIdInput');
 
@@ -1311,11 +1646,31 @@ try {
                                                 schoolId: schoolId
                                             },
                                             success: function(response) {
-                                                var responseData = JSON.parse(response);
-                                                if (responseData.exists) {
-                                                    $('#confirmButton').prop('disabled', false);
+                                                var responseData = response;
+                                                if (responseData.schoolIdExists) {
+
+                                                    // School ID exists
+                                                    if (responseData.lastRequestStatus) {
+
+                                                        if (responseData.passedCooldownPeriod) {
+                                                            //good to go
+                                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                                            $('#studentExistingBookingStatus').val('true');
+                                                            $('#hasPassedCooldownStatus').val('true');
+                                                            $('#confirmButton').prop('disabled', false);
+                                                        } else {
+                                                            //if student has not yet passed last request cooldown status
+                                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('this schoolId already has made a request for tha past 2 hours, please check bookings table');
+                                                            // disable confirm button
+                                                            $('#confirmButton').prop('disabled', true);
+                                                        }
+
+                                                    } else {
+                                                        $('#studentExistingBookingStatus').val('false');
+                                                        $('#confirmButton').prop('disabled', false);
+                                                    }
                                                 } else {
-                                                    console.log(isStudentVerificationOn);
+                                                    $('#studentExistingBookingStatus').val('');
                                                     $('#confirmButton').prop('disabled', true);
                                                 }
                                             },
@@ -1334,11 +1689,30 @@ try {
                                                     schoolId: schoolId
                                                 },
                                                 success: function(response) {
-                                                    var responseData = JSON.parse(response);
-                                                    if (responseData.exists) {
-                                                        $('#confirmButton').prop('disabled', false);
+                                                    var responseData = response;
+                                                    if (responseData.schoolIdExists) {
+
+                                                        if (responseData.lastRequestStatus) {
+
+                                                            if (responseData.passedCooldownPeriod) {
+                                                                //good to go
+                                                                $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                                                $('#studentExistingBookingStatus').val('true');
+                                                                $('#hasPassedCooldownStatus').val('true');
+                                                                $('#confirmButton').prop('disabled', false);
+                                                            } else {
+                                                                //if student has not yet passed last request cooldown status
+                                                                $('#hasNotPassedCooldownPeriodErrorMessage').text('this schoolId already has made a request for tha past 2 hours, please check bookings table');
+                                                                // disable confirm button
+                                                                $('#confirmButton').prop('disabled', true);
+                                                            }
+
+                                                        } else {
+                                                            $('#studentExistingBookingStatus').val('false');
+                                                            $('#confirmButton').prop('disabled', false);
+                                                        }
                                                     } else {
-                                                        console.log(isStudentVerificationOn);
+                                                        $('#studentExistingBookingStatus').val('');
                                                         $('#confirmButton').prop('disabled', true);
                                                     }
                                                 },
@@ -1357,11 +1731,15 @@ try {
                                     var selectedStop = $(this).val();
                                     var fareInput = $('#fare');
 
-                                    //lookup the fare from fare dictionary based on the selected stop
-                                    var fare = fareDictionary[selectedStop];
+                                    console.log(busAirconditioned);
+                                    //check fare input if fare input in fare dicktionary
+                                    var baseFare = fareDictionary[selectedStop] || 0.00; // Default to 0.00 if fare not found
 
-                                    //update with correspoding fare
-                                    fareInput.val(fare);
+                                    //if air conditioned add 10
+                                    var finalFare = busAirconditioned ? baseFare + 10.00 : baseFare;
+
+                                    //update fare input
+                                    fareInput.val(finalFare.toFixed(2));
                                 });
 
                                 $('#cancelButton').on('click', function() {
@@ -1370,6 +1748,7 @@ try {
                                     ticketData = [];
                                     schoolIdStopContainer.hide();
                                     $('#ticketCountInput').val('');
+
                                     ticketCountContainer.show();
 
                                 })
@@ -1377,60 +1756,143 @@ try {
 
                                 //confirm button clicked
                                 $('#confirmButton').on('click', function() {
+                                    $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+
                                     var schoolIdInput = $('#schoolIdInput');
                                     var schoolId = $('#schoolIdInput').val();
                                     var stop = $('#stopSelection').val();
                                     var fare = $('#fare').val();
+                                    var lastBookingStatus = $('#studentExistingBookingStatus').val();
+                                    console.log(lastBookingStatus);
                                     var ticketCount = $('#ticketCountInput').val();
-                                    console.log(stop);
+                                    const ticketCode = generateUniqueTicketCode();
 
                                     if (schoolId.trim() !== '' && stop != null) {
-                                        //collect data, store in array first
-                                        ticketData.push({
-                                            schoolId: schoolId,
-                                            stop: stop,
-                                            fare: fare,
-                                            verifyStudent: isStudentVerificationOn
-                                        });
+                                        //dpt di magbalik2 ang id or name gi enter
+                                        if (!isStudentIdRepeated(schoolId)) {
+                                            //collect data, store in array first
+                                            ticketData.push({
+                                                ticketCode: ticketCode,
+                                                busPlateNumber: busPlateNumber,
+                                                schoolId: schoolId,
+                                                stop: stop,
+                                                fare: fare,
+                                                isStudentVerified: isStudentVerificationOn,
+                                                lastBookingStatus: lastBookingStatus
+                                            });
 
-                                        //increment currentTicketindex
-                                        currentTicketIndex++;
+                                            //increment
+                                            currentTicketIndex++;
 
-                                        //check if accurate data
-                                        console.log(ticketData);
+                                            //clear, get ready for next iteration
+                                            schoolIdInput.val('');
+                                            $('#stopSelection').val('');
+                                            $('#fare').val('');
 
-                                        //clear schoolIdInput field and stopSelection
-                                        schoolIdInput.val('');
-                                        $('#stopSelection').val('');
-                                        $('#fare').val('');
+                                            if (currentTicketIndex >= ticketCount) {
+                                                if (ticketData.length > 0) {
+                                                    //pupulate summry content
+                                                    var summaryContent;
+                                                    for (var i = 0; i < ticketData.length; i++) {
+                                                        var ticket = ticketData[i];
+                                                        summaryContent += '<p><strong>Ticket Code:</strong> ' + ticket.ticketCode + '</p>';
+                                                        summaryContent += '<p><strong>Bus Plate number:</strong> ' + ticket.busPlateNumber + '</p>';
+                                                        summaryContent += '<p><strong>School ID / Name:</strong> ' + ticket.schoolId + '</p>';
+                                                        summaryContent += '<p><strong>Stop:</strong> ' + ticket.stop + '</p>';
+                                                        summaryContent += '<p><strong>Fare:</strong> ' + ticket.fare + '</p>';
+                                                        summaryContent += '<hr>';
+                                                    }
 
-                                        if (currentTicketIndex >= ticketCount) {
+                                                    //set summary content to summary bodeh
+                                                    $('#summaryBody').html(summaryContent);
 
-                                            currentTicketIndex = 0;
-                                            ticketData = [];
-                                            schoolIdStopContainer.hide();
-                                            ticketCountContainer.show();
-                                            currentTicketIndex = 0;
-                                            $('#ticketCountInput').val('');
+                                                    //show modal
+                                                    $('#ticketModal').modal('hide');
+                                                    $('#summaryModal').modal('show');
+                                                } else {
+                                                    console.log('No ticket data to display.');
+                                                }
 
 
-                                            //when all is don, we do somthing
-                                            //TODO: show summary form and generate ticket button.
-
-                                            console.log('done');
-
+                                            } else {
+                                                $('#ticketCountBadge').text(ticketCount - currentTicketIndex);
+                                            }
                                         } else {
-                                            $('#ticketCountBadge').text(ticketCount - currentTicketIndex);
+                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                            $('#hasNotPassedCooldownPeriodErrorMessage').text('Student ID already entered.');
                                         }
                                     } else {
-                                        console.log('School ID and Stop cannot be empty.');
+                                        $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                        $('#hasNotPassedCooldownPeriodErrorMessage').text('School ID or Stop cannot be empty.');
                                     }
-
-
                                 });
 
-                            }
+                                //check if the student ID is repeated
+                                function isStudentIdRepeated(newStudentId) {
+                                    return ticketData.some(ticket => ticket.schoolId === newStudentId);
+                                }
 
+                                function generateUniqueTicketCode() {
+                                    const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                                    const codeLength = 8;
+
+                                    let ticketCode;
+                                    let codeExistsInTickets;
+
+                                    do {
+                                        ticketCode = '';
+                                        for (let i = 0; i < codeLength; i++) {
+                                            ticketCode += characters.charAt(Math.floor(Math.random() * characters.length));
+                                        }
+
+                                        codeExistsInTickets = checkCodeInTickets(ticketCode);
+                                    } while (codeExistsInTickets);
+
+                                    return ticketCode;
+                                }
+
+                                function checkCodeInTickets(code) {
+                                    //check if ticketcode in my array
+                                    return ticketData.some(ticket => ticket.ticketCode === code);
+                                }
+
+
+                                $('#confirmPrintButton').on('click', function() {
+                                    if (ticketData.length > 0) {
+                                        console.log('theres ticketData')
+                                        $.ajax({
+                                            url: 'admin_process_tickets.php',
+                                            type: 'POST',
+                                            data: {
+                                                ticketData: JSON.stringify(ticketData)
+                                            },
+                                            success: function(response) {
+                                                $('#successModal').modal('show');
+                                            },
+                                            error: function(error) {
+                                                console.error(error);
+                                            }
+                                        });
+
+                                        currentTicketIndex = 0;
+                                        ticketData = [];
+                                        schoolIdStopContainer.hide();
+                                        ticketCountContainer.show();
+                                        $('#ticketCountInput').val('');
+                                        $('#studentExistingBookingStatus').val('');
+                                        $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+
+
+                                        $('#summaryModal').modal('hide');
+                                    } else {
+                                        console.log('No ticket data to confirm and print.');
+
+                                    }
+
+                                    //close modal
+                                    $('#summaryModal').modal('hide');
+                                });
+                            }
 
                         } else {
 
@@ -1452,14 +1914,25 @@ try {
                                 slot_error.text("That's more than the available slots. Are you trying to take the bus driver's seat too?");
                             }
 
+
+
                         }
 
+
+
+
                     });
+
                 }
 
 
             })
 
+
+
+            $('#okButton').on('click', function() {
+                location.reload();
+            });
         });
     </script>
 

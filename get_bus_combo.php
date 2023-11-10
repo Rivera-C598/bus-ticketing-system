@@ -4,7 +4,7 @@ include 'db_config.php';
 
 if (isset($_GET['busId'])) {
     $busId = $_GET['busId'];
-    $sql = "SELECT bus_id, plate_number, bus_driver_name, busPhoto, capacity FROM buses WHERE bus_id = :busId";
+    $sql = "SELECT bus_id, plate_number, bus_driver_name, busPhoto, capacity, air_conditioned FROM buses WHERE bus_id = :busId";
 
     try {
         $stmt = $pdo->prepare($sql);

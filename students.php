@@ -40,7 +40,8 @@ try {
             <section id="manage-buses" class="mb-4 px-3">
                 <div class="container text-center">
                     <h2>Students</h2>
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addStudentModal">Add Student</button>
+                    <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#addStudentModal">Add Student</button>
+                    <a href="admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
                 </div>
             </section>
         </main>

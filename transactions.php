@@ -8,7 +8,7 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
 include 'db_config.php';
 
 $sql = "
-SELECT transaction_code, ticket, bus_plate_number, student_id, stop, fare, booked_at, paid_at FROM bookings WHERE status = 'paid'
+SELECT transaction_code, ticket, bus_plate_number, student_id, stop, fare, booked_at, paid_at, user_token, ticket_expiration_timestamp FROM bookings WHERE status = 'paid'
 ORDER BY paid_at DESC;
 ";
 
@@ -39,7 +39,10 @@ try {
 
                     <div class="container mt-5">
                         <div class="row">
-                            <h2 class="text-center">Transaction history</h2>
+                            <div class="container text-center py-5">
+                                <h2>Transaction History</h2>
+                                <a href="admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
+                            </div>
 
                             <div class="input-group py-3">
                                 <input type="text" class="form-control" placeholder="Search...">
@@ -55,6 +58,7 @@ try {
                                             <th scope="col">Ticket</th>
                                             <th scope="col">Bus Plate #</th>
                                             <th scope="col">Student ID / Name </th>
+                                            <th scope="col">User token</th>
                                             <th scope="col">Stop</th>
                                             <th scope="col">Amount paid </th>
                                             <th scope="col">Booked on</th>
@@ -68,6 +72,7 @@ try {
                                                 <td class="ticket"><?= $row['ticket'] ?></td>
                                                 <td class="bus_plate_number"><?= $row['bus_plate_number'] ?></td>
                                                 <td class="student_id"><?= $row['student_id'] ?></td>
+                                                <td class="user_token"><?= $row['user_token'] ?></td>
                                                 <td class="stop"><?= $row['stop'] ?></td>
                                                 <td class="fare"><?= $row['fare'] ?></td>
                                                 <td class="booked_at"><?= $row['booked_at'] ?></td>
