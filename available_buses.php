@@ -48,7 +48,8 @@
         $plateNumber = $row['plate_number'];
 
         //oytput some sort of link or any representation for each bus
-        echo "<button class='btn btn-primary' data-bus-id='" . $busId . "'>" . $plateNumber . "</button>";
+        echo "<a href='ticket_form.php?busId=" . $busId . "' class='btn btn-primary'>" . $plateNumber . "</a>";
+
     }
 
     echo "</div>";
@@ -90,15 +91,23 @@
     </script>
 
 
-    <div id="busDetailsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeModal">&times;</span>
-            <h2 class="text-center">Bus Details</h2>
-            <div id="busDetailsContent">
+    <div class="modal fade" id="busDetailsModal" tabindex="-1" aria-labelledby="busDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="busDetailsModalLabel">Bus Details</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="busDetailsContent">
 
+                    </div>
             </div>
         </div>
     </div>
+
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

@@ -39,29 +39,3 @@ if (isset($_GET['busId'])) {
 
 
 ?>
-<script>
-    var busStopDropdown = document.getElementById('busStop');
-    var fareInput = document.getElementById('fare');
-
-    var fares = {
-        'Compostela': 10.00,
-        'Liloan': 20.00,
-        'Consolacion': 30.00,
-        'Mandaue': 40.00,
-        'Cebu': 50.00,
-        'Danao City': 10.00,
-        'Carmen': 10.00,
-        'Catmon': 20.00,
-        'Sogod': 30.00
-    };
-
-    
-    busStopDropdown.addEventListener('change', function() {
-        var selectedOption = busStopDropdown.value;
-        if (fares.hasOwnProperty(selectedOption)) {
-            fareInput.value = fares[selectedOption].toFixed(2);
-        } else {
-            fareInput.value = '0.00'; 
-        }
-    });
-</script>
