@@ -54,6 +54,17 @@ try {
             max-height: 60vh;
             overflow-y: auto;
         }
+
+        #control-buttons {
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #admin-panel {
+            border-top: 3px solid #ccc;
+        }
     </style>
 </head>
 
@@ -62,23 +73,31 @@ try {
 
     <!-- Content -->
     <div class="wrapper">
-        <header class="bg-primary text-white text-center py-5">
+        <header class="bg-primary text-white text-center py-3">
             <div class="container">
                 <h1>Control Panel</h1>
             </div>
         </header>
 
-        <main class="container my-5">
-            <section id="admin-panel" class="mb-4 px-3">
+
+
+        <main class="container">
+            <section id="admin-panel" class="mb-5">
+
                 <div class="container text-center">
-                    <div class="row">
-                        <div class="col-lg-4 mb-4">
-                            <a class="btn btn-success btn-lg btn-block" href="#" data-bs-toggle="modal" data-bs-target="#ticketModal">Create Bus Tickets</a>
+                    <div class="row" id="control-buttons">
+                        <div class="col-5" style="border-right: 1px solid #ccc">
+                            <a class=" btn btn-success btn-lg btn-block" href="#" data-bs-toggle="modal" data-bs-target="#ticketModal">Create Bus Tickets</a>
                         </div>
-                        <div class="col-lg-8 mb-4">
-                            <a href="../manage_bus/manage_buses.php" class="btn btn-outline-primary btn-md mr-2">Manage Buses</a>
-                            <a href="../view_transactions/transactions.php" class="btn btn-outline-primary btn-md mr-2">Transaction history</a>
-                            <a href="../manage_students/students.php" class="btn btn-outline-primary btn-md mr-2">Student reference</a>
+                        <div class="col-5">
+                            <div class="btn-group" role="group">
+                                <a href="../manage_bus/manage_buses.php" class="btn btn-outline-primary btn-md">Manage Buses</a>
+                                <a href="../view_transactions/transactions.php" class="btn btn-outline-primary btn-md">Transaction history</a>
+                                <a href="../manage_students/students.php" class="btn btn-outline-primary btn-md">Student reference</a>
+
+                            </div>
+                        </div>
+                        <div class="col-2" style="border-left: 1px solid #ccc">
                             <a href="admin_logout.php" class="btn btn-outline-danger btn-md">Log out</a>
                         </div>
                     </div>

@@ -6,12 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="../../../../css/ticketing_form_style.css">
-
+    <style>
+        .container {
+            max-width: 600px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
     <title>Bus Ticketing System - Book tickets</title>
 </head>
 
 <body>
-    <div class="wrapper">
+
+    <div class="container">
+
         <?php
         include '../../../../database_config/db_config.php';
 
@@ -30,7 +40,7 @@
                 $airConditioned = $busDetails['air_conditioned'];
                 echo '<div class="bus-details-container" style="font-size: 20px;">';
                 echo '<div class="bus-photo-column">';
-                echo '<img src="' . $busDetails['busPhoto'] . '" alt="Bus Photo" style="max-width: 200px; max-height: 150px;">';
+                echo '<img src="' . $busDetails['busPhoto'] . '" class="img-fluid" alt="Bus Photo" >';
                 echo '</div>';
                 echo '<div class="bus-info-column">';
                 echo '<strong>Bus Plate Number:</strong> ' . $busDetails['plate_number'] . '<br>';
@@ -83,6 +93,7 @@
         }
         ?>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <script>

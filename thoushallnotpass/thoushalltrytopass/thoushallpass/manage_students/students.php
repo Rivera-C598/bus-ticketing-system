@@ -17,7 +17,7 @@ try {
 }
 
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$itemsPerPage = 10;
+$itemsPerPage = 15;
 $totalItems = count($results);
 $totalPages = ceil($totalItems / $itemsPerPage);
 $startIndex = ($page - 1) * $itemsPerPage;
@@ -41,13 +41,19 @@ $paginatedResults = array_slice($results, $startIndex, $itemsPerPage);
         .table-hover tbody tr:hover {
             background-color: #f5f5f5;
         }
+
+        #title {
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
     </style>
 </head>
 
 <body>
     <div class="wrapper">
 
-        <div class="container text-center py-5">
+        <div class="container text-center py-3" id="title">
             <h2>Student Reference Table</h2>
             <a href="../mirage/admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
             <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#addStudentModal">Add Student</button>

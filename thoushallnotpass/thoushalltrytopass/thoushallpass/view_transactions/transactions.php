@@ -8,7 +8,7 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
 include '../../../../database_config/db_config.php';
 
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
-$limit = 10; //row count
+$limit = 15; //row count
 $offset = ($page - 1) * $limit;
 
 $searchTerm = isset($_GET['search']) ? $_GET['search'] : '';
@@ -36,23 +36,30 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="../../../../css/styles.css">
+    <style>
+        #title {
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
+    </style>
     <title>Admin Control Panel - Transactions history</title>
 </head>
 
 <body>
     <div class="wrapper">
-        <main class="container my-5">
+        <main class="container">
             <section id="admin-panel" class="mb-4 px-3">
                 <div class="container text-center">
 
                     <div class="container">
                         <div class="row">
-                            <div class="container text-center py-5">
+                            <div class="container text-center py-3" id="title">
                                 <h2>Transaction History</h2>
                                 <a href="../mirage/admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
                             </div>
 
-                            <div class="col-lg-12">
+                            <div class="col-lg-12 mt-5">
 
                                 <form method="GET" action="" class="mb-3">
                                     <div class="input-group">
