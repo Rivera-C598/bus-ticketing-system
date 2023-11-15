@@ -35,10 +35,10 @@
 
             $stmt->execute();
         } else {
-            echo "Invalid input parameters.";
+            header("Location: ../info/error_page.php?error=unknown_error");
         }
     } else {
-        echo "One or more parameters are missing or empty.";
+        header("Location: ../info/error_page.php?error=unknown_error");
     }
 
     echo "<div class='wrapper'>";
@@ -49,13 +49,12 @@
 
         //oytput some sort of link or any representation for each bus
         echo "<a href='rev1/rev2/rev3/ticket_form.php?busId=" . $busId . "' class='btn btn-primary'>" . $plateNumber . "</a>";
-
     }
 
     echo "</div>";
     ?>
 
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 

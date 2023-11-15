@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($row) {
             $storedPassword = $row['password'];
             $salt = $row['salt'];
-    
+
             if (verifyPassword($enteredPassword, $storedPassword, $salt)) {
                 //password goods, admin login successful
                 //start a session, only authenticated admins can cum
@@ -29,10 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header('Location: thoushallpass/mirage/admin_control_panel.php');
                 exit();
             } else {
-                echo("Password verification failed.");
+                header('Location: ../../info/error_page.php?error=invalid_credentials');
             }
         } else {
-            echo("Admin not found.");
+            echo ("Admin not found.");
         }
     } catch (PDOException $e) {
         die('Connection failed: ' . $e->getMessage());
@@ -40,7 +40,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 //nooo 
-echo("Login failed");
+header('Location: ../../info/error_page.php?error=invalid_credentials');
 exit();
-
-?>

@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     } else {
                         // invalid fare
-                        echo 'Invalid fare. Please check the selected bus stop and fare.';
+                        header("Location: ../../info/error_page.php?error=invalid_fare");
                     }
                 } else {
                     // if there is a record, we check the student's last request if its higher than the cooldown record, 
@@ -152,14 +152,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 echo "Insertion into 'bookings' table failed. Error: " . $insertBookingStmt->errorInfo()[2];
                             }
                         } else {
-                            echo 'Invalid fare. Please check the selected bus stop and fare.';
+                            header("Location: ../../info/error_page.php?error=invalid_fare");
                         }
                     } else {
                         header("Location: ../../info/cooldown.php");
                     }
                 }
             } else {
-                echo 'Invalid student ID. Please check the entered student ID.';
+                header("Location: ../../info/error_page.php?error=invalid_studentId");
             }
         } elseif ($busDetails['status'] == "full") {
             $busStatus = $busDetails['status'];

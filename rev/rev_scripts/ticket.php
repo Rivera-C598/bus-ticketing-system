@@ -32,8 +32,6 @@ if (isset($_GET['token'])) {
             $instructions1 = 'This ticket serves as a reference. Please present this ticket to the bus ticketing cashier to pay the fare and obtain a bus ride ticket.';
             $instructions2 = 'Kindly note that this ticket will expire in 2 hours from the time of issuance.';
             $instructions3 = '';
-
-
         } else {
             $title = 'TICKET EXPIRED';
             $ticketCode = 'TICKET EXPIRED';
@@ -80,14 +78,15 @@ if (isset($_GET['token'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
         .ticket {
             background-color: #fff;
             border: 1px solid #000;
             border-radius: 5px;
             padding: 20px;
-            max-width: 300px;
-            margin: 0 auto;
+            max-width: 350px;
+            margin: 20px auto;
             text-align: center;
         }
 
@@ -146,6 +145,7 @@ if (isset($_GET['token'])) {
             <p>Expiration: <?php echo date('F j, Y h:i A', strtotime($expirationTimestamp)); ?></p>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 
 </html>

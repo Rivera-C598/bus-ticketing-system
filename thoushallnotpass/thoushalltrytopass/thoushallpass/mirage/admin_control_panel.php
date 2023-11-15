@@ -52,9 +52,7 @@ try {
 
         #summaryModal .modal-body {
             max-height: 60vh;
-            /* Set a maximum height, adjust as needed */
             overflow-y: auto;
-            /* Enable vertical scrolling */
         }
     </style>
 </head>
