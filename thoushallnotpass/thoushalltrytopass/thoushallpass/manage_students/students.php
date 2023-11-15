@@ -37,6 +37,10 @@ $paginatedResults = array_slice($results, $startIndex, $itemsPerPage);
         .table tbody tr {
             cursor: pointer;
         }
+
+        .table-hover tbody tr:hover {
+            background-color: #f5f5f5;
+        }
     </style>
 </head>
 
@@ -94,7 +98,7 @@ $paginatedResults = array_slice($results, $startIndex, $itemsPerPage);
 
                 <div class="col-lg-12">
 
-                    <table class="table table-bordered">
+                    <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th scope="col">Student Id</th>

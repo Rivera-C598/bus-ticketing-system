@@ -79,7 +79,7 @@
                 echo '</form>';
             }
         } else {
-            echo 'bus Id not found';
+            header("Location: ../../../../info/error_page.php?error=noBusIdFound");
         }
         ?>
     </div>

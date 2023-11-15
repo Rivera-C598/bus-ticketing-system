@@ -9,6 +9,8 @@ if (!isset($_GET['error'])) {
         $errorMessage = 'Invalid fare. Please refresh the ticket form and book again.';
     } else if ($error == 'invalid_studentId') {
         $errorMessage = 'Student ID not found. If you are not a student, you can proceed directly to the bus ticketing cashier to book a bus.';
+    } else if ($error == 'noBusIdFound') {
+        $errorMessage = 'Bus not found.';
     } else {
         $errorMessage = 'Unknown error occurred.';
     }

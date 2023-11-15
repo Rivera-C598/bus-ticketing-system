@@ -549,7 +549,7 @@ try {
 
                     });
 
-                    
+
 
 
 
@@ -1032,7 +1032,7 @@ try {
                                             if (currentTicketIndex >= ticketCount) {
                                                 if (ticketData.length > 0) {
                                                     //pupulate summry content
-                                                    var summaryContent;
+                                                    var summaryContent = "";
                                                     for (var i = 0; i < ticketData.length; i++) {
                                                         var ticket = ticketData[i];
                                                         summaryContent += '<p><strong>Ticket Code:</strong> ' + ticket.ticketCode + '</p>';
@@ -1363,7 +1363,7 @@ try {
 
                     });
 
-                    
+
 
 
 
@@ -1563,7 +1563,7 @@ try {
                                     value: 'Mandaue',
                                     text: 'Mandaue'
                                 }));
-                                
+
                                 stopSelection.append($('<option>', {
                                     value: 'Cebu',
                                     text: 'Cebu'
@@ -1850,8 +1850,10 @@ try {
 
                                             if (currentTicketIndex >= ticketCount) {
                                                 if (ticketData.length > 0) {
-                                                    //pupulate summry content
-                                                    var summaryContent;
+
+                                                    var summaryContent = "";
+
+                                                    //populate summary tciekt
                                                     for (var i = 0; i < ticketData.length; i++) {
                                                         var ticket = ticketData[i];
                                                         summaryContent += '<p><strong>Ticket Code:</strong> ' + ticket.ticketCode + '</p>';

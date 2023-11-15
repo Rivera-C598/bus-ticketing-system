@@ -19,6 +19,7 @@ try {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,6 +29,10 @@ try {
     <style>
         .table tbody tr {
             cursor: pointer;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f5f5f5;
         }
     </style>
 </head>
@@ -54,7 +59,7 @@ try {
 
                 <div class="col-lg-12">
 
-                    <table class="table table-bordered">
+                    <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th scope="col">Id</th>
@@ -281,10 +286,10 @@ try {
                 $('#modalStatus').text(status);
 
                 var hideEditBusBtn = $('#editBusButton');
-                
-                if(status == 'unavailable'){
+
+                if (status == 'unavailable') {
                     hideEditBusBtn.show();
-                }else if(status == 'available' || status == 'full'){
+                } else if (status == 'available' || status == 'full') {
                     hideEditBusBtn.hide();
                 }
 
@@ -294,7 +299,7 @@ try {
                 console.log(modalStatus);
 
                 if (modalStatus === 'full') {
-                    $('.toggle-status').hide(); 
+                    $('.toggle-status').hide();
                     $('.toggle-status.unavailable, .toggle-status.available').show();
                 }
 
@@ -356,24 +361,24 @@ try {
             });
 
             $('#editBusButton').on('click', function() {
-                
-                    $('#busId').val($('#modalBusId').text());
-                    $('#editPlateNumber').val($('#modalPlateNumber').text());
-                    $('#editDriverName').val($('#modalDriverName').text());
-                    $('#editDriverContactNum').val($('#modalDriverContactNum').text());
-                    $('#editRoute').val($('#modalRoute').text());
-                    $('#editCapacity').val($('#modalCapacity').text());
-                    $('#editAirConditioned').prop('checked', ($('#modalAirConditioned').text() === 'Yes'));
-                    $('#editStatus').text($('#modalStatus').text());
 
-                    var busPhotoSrc = $('#modalBusPhoto').attr('src');
-                    $('#editBusPhoto').attr('src', busPhotoSrc);
-                    $('#currentBusPhoto').val(busPhotoSrc);
+                $('#busId').val($('#modalBusId').text());
+                $('#editPlateNumber').val($('#modalPlateNumber').text());
+                $('#editDriverName').val($('#modalDriverName').text());
+                $('#editDriverContactNum').val($('#modalDriverContactNum').text());
+                $('#editRoute').val($('#modalRoute').text());
+                $('#editCapacity').val($('#modalCapacity').text());
+                $('#editAirConditioned').prop('checked', ($('#modalAirConditioned').text() === 'Yes'));
+                $('#editStatus').text($('#modalStatus').text());
+
+                var busPhotoSrc = $('#modalBusPhoto').attr('src');
+                $('#editBusPhoto').attr('src', busPhotoSrc);
+                $('#currentBusPhoto').val(busPhotoSrc);
 
 
-                    $('#busDetailsModal').modal('hide');
-                    $('#editBusModal').modal('show');
-                
+                $('#busDetailsModal').modal('hide');
+                $('#editBusModal').modal('show');
+
             });
 
             $('#updateBusButton').on('click', function() {
@@ -382,7 +387,7 @@ try {
 
 
             $('#editBusForm').submit(function(e) {
-                e.preventDefault(); 
+                e.preventDefault();
 
                 var formData = new FormData(this);
                 console.log(formData)
