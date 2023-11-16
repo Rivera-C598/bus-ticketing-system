@@ -102,7 +102,7 @@ $paginatedResults = array_slice($results, $startIndex, $itemsPerPage);
 
                 </div>
 
-                <div class="col-lg-12">
+                <div class="table-responsive">
 
                     <table class="table table-bordered table-hover">
                         <thead>

@@ -59,14 +59,18 @@ try {
                                 <a href="../mirage/admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
                             </div>
 
-                            <div class="col-lg-12 mt-5">
-
+                            <div class="container mt-5">
                                 <form method="GET" action="" class="mb-3">
                                     <div class="input-group">
                                         <input type="text" class="form-control" placeholder="Search..." name="search" value="<?= $searchTerm ?>">
                                         <button class="btn btn-primary" type="submit">Search</button>
                                     </div>
                                 </form>
+                            </div>
+
+                            <div class="table-responsive">
+
+
 
                                 <table class="table table-bordered">
                                     <thead>

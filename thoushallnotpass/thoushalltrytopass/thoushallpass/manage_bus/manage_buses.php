@@ -23,7 +23,8 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
 
     <title>Manage Buses - Bus Ticketing System</title>
     <style>
@@ -63,7 +64,7 @@ try {
 
                 </div>
 
-                <div class="col-lg-12">
+                <div class="table-responsive">
 
                     <table class="table table-bordered table-hover">
                         <thead>
@@ -96,7 +97,35 @@ try {
                                     <td class="air_conditioned"><?= ($row['air_conditioned'] ? "Yes" : "No") ?></td>
                                     <td class="created_at"><?= $row['created_at'] ?></td>
                                     <td class="updated_at"><?= $row['updated_at'] ?></td>
-                                    <td class="status"><?= $row['status'] ?></td>
+                                    <td class="status">
+                                        <?php
+                                        $status = $row['status'];
+                                        $badgeClass = '';
+                                        $badgeText = '';
+
+                                        switch ($status) {
+                                            case 'available':
+                                                $badgeClass = 'badge bg-success';
+                                                $badgeText = $status;
+                                                break;
+                                            case 'unavailable':
+                                                $badgeClass = 'badge bg-danger';
+                                                $badgeText = $status;
+                                                break;
+                                            case 'full':
+                                                $badgeClass = 'badge text-bg-warning';
+                                                $badgeText = $status;
+                                                break;
+                                                // Add more cases if needed...
+
+                                            default:
+                                                $badgeClass = 'badge badge-secondary';
+                                                $badgeText = 'Unknown';
+                                        }
+                                        ?>
+                                        <span class="<?= $badgeClass ?>"><?= $badgeText ?></span>
+
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -301,7 +330,7 @@ try {
 
                 $('#busDetailsModal').modal('show');
 
-                var modalStatus = $('#modalStatus').text();
+                var modalStatus = $('#modalStatus').text().trim();
                 console.log(modalStatus);
 
                 if (modalStatus === 'full') {
@@ -335,10 +364,9 @@ try {
             });
 
             $('#confirmStatusChangeModal .btn-primary').on('click', function() {
-
                 var busPlateNum = $('#modalBusPlateNum').text();
-                var oldStatus = $('#modalOldStatus').text();
-                var newStatus = $('#modalNewStatus').text();
+                var oldStatus = $('#modalOldStatus').text().trim(); // Trim the old status
+                var newStatus = $('#modalNewStatus').text().trim(); // Trim the new status
 
                 var statusChangeData = {
                     busPlateNum: busPlateNum,
@@ -351,7 +379,13 @@ try {
                     url: 'mbs/toggle_bus_status.php',
                     data: statusChangeData,
                     success: function(response) {
-                        var data = JSON.parse(response);
+                        if (response.trim() === '') {
+                            console.error('Empty response received.');
+                            return;
+                        }
+
+                        var trimmedResponse = response.trim();
+                        var data = JSON.parse(trimmedResponse);
                         if (data.status === 'success') {
                             window.location.reload();
                         } else {
@@ -365,6 +399,7 @@ try {
 
                 $('#confirmStatusChangeModal').modal('hide');
             });
+
 
             $('#editBusButton').on('click', function() {
 

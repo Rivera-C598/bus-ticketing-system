@@ -86,21 +86,21 @@ try {
 
                 <div class="container text-center">
                     <div class="row" id="control-buttons">
-                        <div class="col-5" style="border-right: 1px solid #ccc">
-                            <a class=" btn btn-success btn-lg btn-block" href="#" data-bs-toggle="modal" data-bs-target="#ticketModal">Create Bus Tickets</a>
+                        <div class="col-md-6 col-lg-5 mb-3">
+                            <a class="btn btn-success btn-lg btn-block" href="#" data-bs-toggle="modal" data-bs-target="#ticketModal">Create Bus Tickets</a>
                         </div>
-                        <div class="col-5">
+                        <div class="col-md-6 col-lg-5 mb-3">
                             <div class="btn-group" role="group">
                                 <a href="../manage_bus/manage_buses.php" class="btn btn-outline-primary btn-md">Manage Buses</a>
                                 <a href="../view_transactions/transactions.php" class="btn btn-outline-primary btn-md">Transaction history</a>
                                 <a href="../manage_students/students.php" class="btn btn-outline-primary btn-md">Student reference</a>
-
                             </div>
                         </div>
-                        <div class="col-2" style="border-left: 1px solid #ccc">
+                        <div class="col-md-12 col-lg-2">
                             <a href="admin_logout.php" class="btn btn-outline-danger btn-md">Log out</a>
                         </div>
                     </div>
+
 
 
                     <!-- tobol container -->
@@ -111,7 +111,7 @@ try {
                             <div class="input-group py-3">
                                 <input type="text" class="form-control" id="searchInput" placeholder="Search...">
                             </div>
-                            <div class="col-lg-12">
+                            <div class="table-responsive">
                                 <!-- table -->
                                 <table class="table table-bordered" id="bookingsTable">
                                     <thead>
@@ -135,6 +135,7 @@ try {
                                                 <td class="fare"><?= $row['fare'] ?></td>
                                                 <td class="booked_at"><?= $row['booked_at'] ?></td>
                                                 <td class="status"><?= $row['status'] ?></td>
+
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
