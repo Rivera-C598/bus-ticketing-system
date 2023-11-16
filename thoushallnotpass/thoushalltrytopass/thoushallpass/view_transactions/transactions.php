@@ -48,82 +48,83 @@ try {
 
 <body>
     <div class="wrapper">
+        <div class="container text-center py-3" id="title">
+            <h2>Transaction History</h2>
+            <a href="../mirage/admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
+        </div>
         <main class="container">
             <section id="admin-panel" class="mb-4 px-3">
-                <div class="container text-center">
-
-                    <div class="container">
-                        <div class="row">
-                            <div class="container text-center py-3" id="title">
-                                <h2>Transaction History</h2>
-                                <a href="../mirage/admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
-                            </div>
-
-                            <div class="container mt-5">
-                                <form method="GET" action="" class="mb-3">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Search..." name="search" value="<?= $searchTerm ?>">
-                                        <button class="btn btn-primary" type="submit">Search</button>
-                                    </div>
-                                </form>
-                            </div>
-
-                            <div class="table-responsive">
 
 
+                <div class="container">
+                    <div class="row">
 
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Transaction code</th>
-                                            <th scope="col">Ticket</th>
-                                            <th scope="col">Bus Plate #</th>
-                                            <th scope="col">Student ID / Name </th>
-                                            <th scope="col">User token</th>
-                                            <th scope="col">Stop</th>
-                                            <th scope="col">Amount paid </th>
-                                            <th scope="col">Booked on</th>
-                                            <th scope="col">Paid on</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($results as $row) : ?>
-                                            <tr data-transaction-code="<?= $row['transaction_code'] ?>">
-                                                <td class="transaction_code"><?= $row['transaction_code'] ?></td>
-                                                <td class="ticket"><?= $row['ticket'] ?></td>
-                                                <td class="bus_plate_number"><?= $row['bus_plate_number'] ?></td>
-                                                <td class="student_id"><?= $row['student_id'] ?></td>
-                                                <td class="user_token"><?= $row['user_token'] ?></td>
-                                                <td class="stop"><?= $row['stop'] ?></td>
-                                                <td class="fare"><?= $row['fare'] ?></td>
-                                                <td class="booked_at"><?= $row['booked_at'] ?></td>
-                                                <td class="paid_at"><?= $row['paid_at'] ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
 
-                                <div class="d-flex justify-content-center">
-                                    <?php
-                                    $totalRecords = $pdo->query("SELECT COUNT(*) FROM bookings WHERE status = 'paid' AND (transaction_code LIKE '%$searchTerm%' OR ticket LIKE '%$searchTerm%' OR bus_plate_number LIKE '%$searchTerm%' OR student_id LIKE '%$searchTerm%')")->fetchColumn();
-                                    $totalPages = ceil($totalRecords / $limit);
-
-                                    echo '<ul class="pagination">';
-                                    for ($i = 1; $i <= $totalPages; $i++) {
-                                        echo '<li class="page-item ' . ($i == $page ? 'active' : '') . '"><a class="page-link" href="?page=' . $i . '&search=' . $searchTerm . '">' . $i . '</a></li>';
-                                    }
-                                    echo '</ul>';
-                                    ?>
-
+                        <div class="container mt-5">
+                            <form method="GET" action="" class="mb-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search..." name="search" value="<?= $searchTerm ?>">
+                                    <button class="btn btn-primary" type="submit">Search</button>
                                 </div>
+                            </form>
+                        </div>
+
+                        <div class="table-responsive">
 
 
+
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Transaction code</th>
+                                        <th scope="col">Ticket</th>
+                                        <th scope="col">Bus Plate #</th>
+                                        <th scope="col">Student ID / Name </th>
+                                        <th scope="col">User token</th>
+                                        <th scope="col">Stop</th>
+                                        <th scope="col">Amount paid </th>
+                                        <th scope="col">Booked on</th>
+                                        <th scope="col">Paid on</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($results as $row) : ?>
+                                        <tr data-transaction-code="<?= $row['transaction_code'] ?>">
+                                            <td class="transaction_code"><?= $row['transaction_code'] ?></td>
+                                            <td class="ticket"><?= $row['ticket'] ?></td>
+                                            <td class="bus_plate_number"><?= $row['bus_plate_number'] ?></td>
+                                            <td class="student_id"><?= $row['student_id'] ?></td>
+                                            <td class="user_token"><?= $row['user_token'] ?></td>
+                                            <td class="stop"><?= $row['stop'] ?></td>
+                                            <td class="fare"><?= $row['fare'] ?></td>
+                                            <td class="booked_at"><?= $row['booked_at'] ?></td>
+                                            <td class="paid_at"><?= $row['paid_at'] ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+
+                            <div class="d-flex justify-content-center">
+                                <?php
+                                $totalRecords = $pdo->query("SELECT COUNT(*) FROM bookings WHERE status = 'paid' AND (transaction_code LIKE '%$searchTerm%' OR ticket LIKE '%$searchTerm%' OR bus_plate_number LIKE '%$searchTerm%' OR student_id LIKE '%$searchTerm%')")->fetchColumn();
+                                $totalPages = ceil($totalRecords / $limit);
+
+                                echo '<ul class="pagination">';
+                                for ($i = 1; $i <= $totalPages; $i++) {
+                                    echo '<li class="page-item ' . ($i == $page ? 'active' : '') . '"><a class="page-link" href="?page=' . $i . '&search=' . $searchTerm . '">' . $i . '</a></li>';
+                                }
+                                echo '</ul>';
+                                ?>
 
                             </div>
+
+
+
                         </div>
                     </div>
-
                 </div>
+
+
             </section>
         </main>
     </div>
