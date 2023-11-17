@@ -24,7 +24,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="../../../../css/styles.css">
 
     <title>Manage Buses - Bus Ticketing System</title>
     <style>
@@ -88,7 +88,7 @@ try {
                                 <tr data-plate-number="<?= $row['plate_number'] ?>">
                                     <td class="busId"><?= $row['bus_id'] ?></td>
                                     <td class="busPhoto"><img src='<?= $row['busPhoto'] ?>' alt='Bus Photo' width='80' height='auto'></td>
-                                    <td class="plate_number"><?= $row['plate_number'] ?></td>
+                                    <td class="plate_number"><strong><?= $row['plate_number'] ?></strong></td>
                                     <td class="bus_driver_name"><?= $row['bus_driver_name'] ?></td>
                                     <td class="driver_contact_num"><?= $row['driver_contact_num'] ?></td>
                                     <td class="route"><?= $row['route'] ?></td>
@@ -258,10 +258,20 @@ try {
                                 <label for="editDriverName" class="form-label">Bus Driver Name</label>
                                 <input type="text" class="form-control" id="editDriverName" name="editDriverName">
                             </div>
+
+
+
                             <div class="mb-3">
-                                <label for="editDriverContactNum" class="form-label">Driver Contact Number</label>
-                                <input type="text" class="form-control" id="editDriverContactNum" name="editDriverContactNum">
+                                <label for="editDriverContactNum" class="form-label">Driver Contact Number:</label>
+                                <div class="input-group flex-nowrap">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="addon-wrapping">+63</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="editDriverContactNum" name="editDriverContactNum" maxlength="10" required>
+                                </div>
+                                <span id="editInvalidNumberErrorMsg" style="color: red;"></span>
                             </div>
+
                             <div class="mb-3">
                                 <label for="editRoute" class="form-label">Route</label>
                                 <select class="form-select" id="editRoute" name="editRoute">
@@ -272,6 +282,7 @@ try {
                             <div class="mb-3">
                                 <label for="editCapacity" class="form-label">Capacity:</label>
                                 <input type="number" class="form-control" id="editCapacity" name="editCapacity">
+                                <span id="editInvalidCapacityErrMsg" style="color: red;"></span>
                             </div>
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="editAirConditioned" name="editAirConditioned">
@@ -288,8 +299,113 @@ try {
         </div>
     </div>
 
+    <!-- add Bus Modal -->
+    <div class="modal fade" id="addBusModal" tabindex="-1" role="dialog" aria-labelledby="addBusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addBusModalLabel">Add Bus</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <form id="addBusForm" action="add_bus.php" method="post" enctype="multipart/form-data">
+
+                        <div class="mb-3">
+                            <label for="plateNumber" class="form-label">Plate number:</label>
+                            <input type="text" class="form-control" id="plateNumber" name="plateNumber" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="driverName" class="form-label">Bus driver name:</label>
+                            <input type="text" class="form-control" id="driverName" name="driverName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactNum" class="form-label">driver contact number:</label>
+                            <div class="input-group flex-nowrap">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="addon-wrapping">+63</span>
+                                </div>
+                                <input type="text" class="form-control" id="contactNum" name="contactNum" maxlength="10" required>
+
+                            </div>
+                            <span id="invalidNumberMsg" style="color: red;"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="busPhoto" class="form-label">Bus Photo (max 5MB) (Optional):</label>
+                            <input type="file" id="busPhoto" name="busPhoto" accept="image/*">
+                            <span id="busPhotoErrMsg" style="color: red;"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="route" class="form-label">Route:</label>
+                            <select class="form-control" id="route" name="route" required>
+                                <option value="Going North">Going North</option>
+                                <option value="Going South">Going South</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="capacity" class="form-label">Capacity:</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" required>
+                            <span id="invalidCapacityErrMsg" style="color: red;"></span>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="air_conditioned" name="air_conditioned">
+                            <label class="form-check-label" for="air_conditioned">Air Conditioned</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- success modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Success</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center">Success</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="okButton">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- error modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center" id="modalErrMsg">Error adding bus.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="okButton">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3">
+        <div class="container">
+            <p>&copy; 2023 Bus Ticketing Service</p>
+        </div>
+    </footer>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
             $('table tbody tr').on('click', function() {
@@ -363,6 +479,63 @@ try {
                 });
             });
 
+            $('#addBusForm').submit(function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'add_bus.php',
+                    data: new FormData(this),
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        if (data.status === 'success') {
+                            $('#invalidNumberMsg').text('Invalid Phone Number').hide();
+                            $('#invalidCapacityErrMsg').text('Invalid Capacity').hide();
+                            $('#busPhotoErrMsg').text('').hide();
+                            $('#addBusModal').modal('hide');
+                            $('#successModal').modal('show');
+                        } else if (data.status === 'invalid phone number') {
+                            $('#invalidCapacityErrMsg').text('Invalid Capacity').hide();
+                            $('#busPhotoErrMsg').text('').hide();
+                            $('#invalidNumberMsg').text('Invalid Phone Number').show();
+                        } else if (data.status === 'error adding bus photo') {
+                            $('#busPhotoErrMsg').text('There was a problem adding this bus photo.').show();
+                        } else if (data.status === 'photo exceeded 5mb') {
+                            $('#busPhotoErrMsg').text('Image exceeded 5mb, cannot add.').show();
+                        } else if (data.status === 'invalid capacity') {
+                            $('#busPhotoErrMsg').text('').hide();
+                            $('#invalidNumberMsg').text('Invalid Phone Number').hide();
+                            $('#invalidCapacityErrMsg').text('Invalid Capacity').show();
+                        } else {
+                            $('#invalidNumberMsg').text('').hide();
+                            $('#invalidCapacityErrMsg').text('Invalid Capacity').hide();
+                            $('#busPhotoErrMsg').text('').hide();
+                            $('#addBusModal').modal('hide');
+                            $('#errorModal').modal('show');
+                        }
+                    },
+
+                });
+            });
+
+            $('.driver_contact_num').each(function() {
+                var originalText = $(this).text();
+
+                if (originalText.length > 3) {
+                    var newText = originalText.slice(3);
+                    $(this).text(newText);
+                }
+            });
+
+            $('#contactNum').on('input', function() {
+                var inputValue = $(this).val().replace(/\D/g, '');
+            });
+
+
+
             $('#confirmStatusChangeModal .btn-primary').on('click', function() {
                 var busPlateNum = $('#modalBusPlateNum').text();
                 var oldStatus = $('#modalOldStatus').text().trim();
@@ -431,7 +604,7 @@ try {
                 e.preventDefault();
 
                 var formData = new FormData(this);
-                console.log(formData)
+                var errorMsg = $('#editInvalidNumberErrorMsg');
 
                 $.ajax({
                     type: 'POST',
@@ -442,10 +615,19 @@ try {
                     success: function(response) {
                         var data = JSON.parse(response);
                         if (data.status === 'success') {
+                            errorMsg.hide();
+                            $('#editInvalidCapacityErrMsg').text('').hide();
                             $('#editBusModal').modal('hide');
-                            window.location.reload();
+                            $('#successModal').modal('show');
+                        } else if (data.status === 'invalid phone number') {
+                            $('#editInvalidCapacityErrMsg').text('Invalid Capacity').hide();
+                            errorMsg.text('Invalid Number').show();
+                        } else if (data.status === 'invalid capacity') {
+                            errorMsg.text('Invalid Number').hide();
+                            $('#editInvalidCapacityErrMsg').text('Invalid Capacity').show();
                         } else {
-                            alert('Failed to update bus details.');
+                            $('#editBusModal').modal('hide');
+                            $('#errorModal').modal('show');
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -492,6 +674,10 @@ try {
 
             });
 
+            $('#okButton').on('click', function() {
+                location.reload();
+            });
+
 
             //search function
             $('#searchButton').on('click', function() {
@@ -520,67 +706,8 @@ try {
     </script>
 
 
-    <!-- add Bus Modal -->
-    <div class="modal fade" id="addBusModal" tabindex="-1" role="dialog" aria-labelledby="addBusModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addBusModalLabel">Add Bus</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
 
-                    <form action="add_bus.php" method="post" enctype="multipart/form-data">
 
-                        <div class="mb-3">
-                            <label for="plateNumber" class="form-label">Plate number:</label>
-                            <input type="text" class="form-control" id="plateNumber" name="plateNumber" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="driverName" class="form-label">Bus driver name:</label>
-                            <input type="text" class="form-control" id="driverName" name="driverName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="contactNum" class="form-label">driver contact number:</label>
-                            <input type="text" class="form-control" id="contactNum" name="contactNum" placeholder="+63----------" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="busPhoto" class="form-label">Bus Photo (max 5MB) (Optional):</label>
-                            <input type="file" id="busPhoto" name="busPhoto" accept="image/*">
-                        </div>
-                        <div class="mb-3">
-                            <label for="route" class="form-label">Route:</label>
-                            <select class="form-control" id="route" name="route" required>
-                                <option value="Going North">Going North</option>
-                                <option value="Going South">Going South</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="capacity" class="form-label">Capacity:</label>
-                            <input type="number" class="form-control" id="capacity" name="capacity" required>
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="air_conditioned" name="air_conditioned">
-                            <label class="form-check-label" for="air_conditioned">Air Conditioned</label>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="bg-dark text-white text-center py-3">
-        <div class="container">
-            <p>&copy; 2023 Bus Ticketing Service</p>
-        </div>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

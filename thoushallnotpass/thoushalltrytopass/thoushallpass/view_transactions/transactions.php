@@ -90,8 +90,8 @@ try {
                                 <tbody>
                                     <?php foreach ($results as $row) : ?>
                                         <tr data-transaction-code="<?= $row['transaction_code'] ?>">
-                                            <td class="transaction_code"><?= $row['transaction_code'] ?></td>
-                                            <td class="ticket"><?= $row['ticket'] ?></td>
+                                            <td class="transaction_code"><strong><?= $row['transaction_code'] ?></strong></td>
+                                            <td class="ticket"><strong><?= $row['ticket'] ?></strong></td>
                                             <td class="bus_plate_number"><?= $row['bus_plate_number'] ?></td>
                                             <td class="student_id"><?= $row['student_id'] ?></td>
                                             <td class="user_token"><?= $row['user_token'] ?></td>

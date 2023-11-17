@@ -35,6 +35,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $busPhoto = $_POST['currentBusPhoto'];
     }
 
+    $driverContactNum = "+63" . $driverContactNum;
+
+    if (!isValidPhoneNumber($driverContactNum)) {
+        $response = array('status' => 'invalid phone number');
+        echo json_encode($response);
+        exit();
+    }
+
+    if ($capacity <= 0) {
+        $response = array('status' => 'invalid capacity');
+        echo json_encode($response);
+        exit();
+    }
+
+
 
     $query = "UPDATE buses SET plate_number = :plateNumber, bus_driver_name = :driverName, driver_contact_num = :driverContactNum, route = :route, capacity = :capacity, air_conditioned = :airConditioned, busPhoto = :busPhoto
           WHERE bus_id = :busId";
@@ -56,4 +71,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $response = array('status' => 'error');
     }
     echo json_encode($response);
+}
+function isValidPhoneNumber($phoneNumber)
+{
+    $pattern = '/^\+63\d{10}$/';
+
+    return preg_match($pattern, $phoneNumber);
 }

@@ -29,7 +29,8 @@ if ($stmt->execute()) {
 require '../../../../database_config/db_config.php';
 
 if (isset($_FILES['busPhoto'])) {
-    $uploadDir = '../../../../uploads/';  //create folder for photos
+    $uploadDir = '../../../../uploads/';  //folder for photos
+    $defaultImage = '../../../../uploads/default_bus.png';
     $uploadFile = $uploadDir . basename($_FILES['busPhoto']['name']);
 
     // Check if a file was uploaded
@@ -46,14 +47,18 @@ if (isset($_FILES['busPhoto'])) {
                 //yay
             } else {
                 //no
-                echo "File upload failed.";
+                $response = array('status' => 'error adding bus photo');
+                echo json_encode($response);
+                exit();
             }
         } else {
-            echo "Invalid file type or size. Please upload an image (JPEG, PNG, or GIF) that is less than 5MB.";
+            $response = array('status' => 'photo exceeded 5mb');
+            echo json_encode($response);
+            exit();
         }
     } else {
         //when nothing
-        $uploadFile = null;
+        $uploadFile = $defaultImage;
     }
 
     //sanitize inputs
@@ -64,6 +69,21 @@ if (isset($_FILES['busPhoto'])) {
     $capacity = filter_input(INPUT_POST, 'capacity', FILTER_VALIDATE_INT);
     $air_conditioned = isset($_POST['air_conditioned']) ? 1 : 0;
 
+    $contactNum = "+63" . $contactNum;
+
+
+    if (!isValidPhoneNumber($contactNum)) {
+        $response = array('status' => 'invalid phone number');
+        echo json_encode($response);
+        exit();
+    }
+
+    if ($capacity <= 0) {
+        $response = array('status' => 'invalid capacity');
+        echo json_encode($response);
+        exit();
+    }
+
     //default status of a newly added bus
     $status = "unavailable";
 
@@ -72,11 +92,18 @@ if (isset($_FILES['busPhoto'])) {
     $stmt = $pdo->prepare($query);
 
     if ($stmt->execute([$plateNumber, $driverName, $contactNum, $route, $capacity, $air_conditioned, $uploadFile, $status])) {
-        //yay
-        header("Location: manage_buses.php");
+        $response = array('status' => 'success');
+        echo json_encode($response);
         exit();
     } else {
-        //ow men
-        echo "Error adding the bus.";
+        $response = array('status' => 'error', 'message' => 'Error adding the bus.');
+        echo json_encode($response);
+        exit();
     }
+}
+function isValidPhoneNumber($phoneNumber)
+{
+    $pattern = '/^\+63\d{10}$/';
+
+    return preg_match($pattern, $phoneNumber);
 }

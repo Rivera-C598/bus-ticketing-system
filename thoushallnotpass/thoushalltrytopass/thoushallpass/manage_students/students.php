@@ -81,7 +81,9 @@ $paginatedResults = array_slice($results, $startIndex, $itemsPerPage);
                                 <label for="studentName">Student name:</label>
                                 <input type="text" class="form-control" id="studentName" name="studentName" required>
                             </div>
-                            <button type="submit" class="btn btn-primary" id="addStudentBtn" disabled>Confirm</button>
+                            <div class="justify-content-center d-flex my-2">
+                                <button type="submit" class="btn btn-primary" id="addStudentBtn" disabled>Confirm</button>
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -114,7 +116,7 @@ $paginatedResults = array_slice($results, $startIndex, $itemsPerPage);
                         <tbody>
                             <?php foreach ($paginatedResults as $row) : ?>
                                 <tr data-student-id="<?= $row['student_id'] ?>">
-                                    <td class="studentId"><?= $row['student_id'] ?></td>
+                                    <td class="studentId"><strong><?= $row['student_id'] ?></strong></td>
                                     <td class="studentName"><?= $row['name'] ?></td>
                                 </tr>
                             <?php endforeach; ?>

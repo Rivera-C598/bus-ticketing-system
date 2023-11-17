@@ -65,6 +65,12 @@ try {
         #admin-panel {
             border-top: 3px solid #ccc;
         }
+
+        .small-image {
+            max-width: 50%;
+            height: auto;
+
+        }
     </style>
 </head>
 
@@ -456,7 +462,7 @@ try {
                             },
                             success: function(busData) {
 
-                                //clear previous shit
+                                //clear previous 
                                 busDetails.empty();
                                 busDetails.show();
 
@@ -473,8 +479,7 @@ try {
                                 busDetailsContainer.append($('<img>', {
                                     src: busData.busPhoto,
                                     alt: 'Bus Photo',
-                                    class: 'img-fluid mx-auto d-block',
-                                    style: 'width: 80px; height: 80px;'
+                                    class: 'img-fluid mx-auto d-block small-image'
                                 }));
 
                                 busDetailsContainer.append($('<p>', {
@@ -611,6 +616,12 @@ try {
                         id: 'splitFareDiv',
                         class: 'input-group',
                         style: 'margin-top: 5px; margin-bottom: 5px;'
+                    });
+
+
+                    var confirmAndCancelBtnDiv = $('<div>', {
+                        class: 'justify-content-center d-flex my-2'
+
                     });
 
                     var confirmBtn = $('<button>', {
@@ -819,8 +830,8 @@ try {
                                     id: 'ticketCountBadge'
                                 }))
 
-                                ticketForm.append(confirmBtn);
-                                ticketForm.append(cancelBtn);
+                                confirmAndCancelBtnDiv.append(confirmBtn, cancelBtn);
+                                ticketForm.append(confirmAndCancelBtnDiv);
 
                                 busDetailsContainer.append(schoolIdStopContainer);
 
@@ -1270,7 +1281,7 @@ try {
                             },
                             success: function(busData) {
 
-                                //clear previous shit
+                                //clear previous 
                                 busDetails.empty();
                                 busDetails.show();
 
@@ -1287,8 +1298,7 @@ try {
                                 busDetailsContainer.append($('<img>', {
                                     src: busData.busPhoto,
                                     alt: 'Bus Photo',
-                                    class: 'img-fluid mx-auto d-block',
-                                    style: 'width: 80px; height: 80px;'
+                                    class: 'img-fluid mx-auto d-block small-image'
                                 }));
 
                                 busDetailsContainer.append($('<p>', {
@@ -1425,6 +1435,11 @@ try {
                         id: 'splitFareDiv',
                         class: 'input-group',
                         style: 'margin-top: 5px; margin-bottom: 5px;'
+                    });
+
+                    var confirmAndCancelBtnDiv = $('<div>', {
+                        class: 'justify-content-center d-flex my-2'
+
                     });
 
                     var confirmBtn = $('<button>', {
@@ -1624,6 +1639,8 @@ try {
 
                                 ticketForm.append(splitFareDiv);
 
+
+
                                 confirmBtn = $('<button>', {
                                     class: 'btn btn-primary',
                                     text: 'Confirm',
@@ -1638,8 +1655,8 @@ try {
                                     id: 'ticketCountBadge'
                                 }))
 
-                                ticketForm.append(confirmBtn);
-                                ticketForm.append(cancelBtn);
+                                confirmAndCancelBtnDiv.append(confirmBtn, cancelBtn);
+                                ticketForm.append(confirmAndCancelBtnDiv);
 
                                 busDetailsContainer.append(schoolIdStopContainer);
 
