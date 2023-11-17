@@ -116,7 +116,6 @@ try {
                                                 $badgeClass = 'badge text-bg-warning';
                                                 $badgeText = $status;
                                                 break;
-                                                // Add more cases if needed...
 
                                             default:
                                                 $badgeClass = 'badge badge-secondary';
@@ -305,7 +304,7 @@ try {
                 var airConditioned = $(this).find('.air_conditioned').text();
                 var created_at = $(this).find('.created_at').text();
                 var updated_at = $(this).find('.updated_at').text();
-                var status = $(this).find('.status').text();
+                var status = $(this).find('.status').text().trim();
 
                 $('#modalBusPhoto').attr('src', busPhoto);
                 $('#modalBusId').text(busId);
@@ -321,6 +320,7 @@ try {
                 $('#modalStatus').text(status);
 
                 var hideEditBusBtn = $('#editBusButton');
+
 
                 if (status == 'unavailable') {
                     hideEditBusBtn.show();
@@ -365,8 +365,8 @@ try {
 
             $('#confirmStatusChangeModal .btn-primary').on('click', function() {
                 var busPlateNum = $('#modalBusPlateNum').text();
-                var oldStatus = $('#modalOldStatus').text().trim(); // Trim the old status
-                var newStatus = $('#modalNewStatus').text().trim(); // Trim the new status
+                var oldStatus = $('#modalOldStatus').text().trim();
+                var newStatus = $('#modalNewStatus').text().trim();
 
                 var statusChangeData = {
                     busPlateNum: busPlateNum,

@@ -133,7 +133,7 @@ if (isset($_GET['token'])) {
             <div class="ticket-title"><?php echo $title; ?></div>
         </div>
         <div class="ticket-details">
-            <div class="ticket-code"><?php echo $ticketCode; ?></div>
+            <div class="ticket-code"><?php echo '<strong><p>' . $ticketCode . '</p></strong>' ?></div>
             <div class="ticket-info">Stop: <?php echo $stop; ?></div>
             <div class="ticket-info">Fare: Php <?php echo number_format($fare, 2); ?></div>
         </div>
