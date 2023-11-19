@@ -7,12 +7,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="../../../../css/ticketing_form_style.css">
     <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: url("../../../../img_assets/web-bg.jpg") center no-repeat;
+            background-size: cover;
+        }
+
         .container {
-            max-width: 600px;
+            max-width: 400px;
             border: 1px solid #ccc;
             border-radius: 15px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 50vh;
         }
     </style>
     <title>Bus Ticketing System - Book tickets</title>

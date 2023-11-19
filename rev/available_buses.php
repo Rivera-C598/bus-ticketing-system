@@ -6,7 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/ticketing_styles.css">
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: url("../img_assets/web-bg.jpg") center no-repeat;
+            background-size: cover;
+        }
 
+        .wrapper {
+            background: rgba(255, 255, 255, 0.19);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
     <title>Bus Ticketing System - Available Buses</title>
 </head>
 
@@ -42,7 +60,7 @@
     }
 
     echo "<div class='wrapper'>";
-    echo "<h1 class='display-6 text-center'>Available buses " . $route . "</h1>";
+    echo "<h1 class='display-6 text-center'><strong>Available buses " . $route . "</strong></h1>";
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $busId = $row['bus_id'];
         $plateNumber = $row['plate_number'];

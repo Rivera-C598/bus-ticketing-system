@@ -36,6 +36,36 @@ try {
     <link rel="stylesheet" href="../../../../css/styles.css">
     <title>Admin Control Panel - Bus Ticketing System</title>
     <style>
+        .wrapper {
+            position: relative;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: url('../../../../img_assets/web-bg.jpg') center no-repeat;
+            background-size: cover;
+        }
+
+        #table-container,
+        #control-buttons {
+            background: rgba(255, 255, 255, 0.19);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        #searchInput {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .table {
+            background-color: white;
+        }
+
         .table tbody tr {
             cursor: pointer;
             transition: background-color 0.3s;
@@ -79,14 +109,11 @@ try {
 
     <!-- Content -->
     <div class="wrapper">
-        <header class="bg-primary text-white text-center py-3">
+        <header class="bg-dark text-white text-center py-3">
             <div class="container">
                 <h1>Control Panel</h1>
             </div>
         </header>
-
-
-
         <main class="container">
             <section id="admin-panel" class="mb-5">
 
@@ -106,11 +133,8 @@ try {
                             <a href="admin_logout.php" class="btn btn-outline-danger btn-md">Log out</a>
                         </div>
                     </div>
-
-
-
                     <!-- tobol container -->
-                    <div class="container mt-5">
+                    <div class="container mt-5" id="table-container">
                         <div class="row">
                             <h2 class="text-center">Bookings</h2>
                             <!-- search -->

@@ -40,6 +40,27 @@ if (isset($_GET['status'])) {
         .label {
             margin-top: 10px;
         }
+
+        .wrapper {
+            background: rgba(255, 255, 255, 0.19);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+
+
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: url("../img_assets/web-bg.jpg") center no-repeat;
+            background-size: cover;
+
+        }
     </style>
 </head>
 
@@ -51,7 +72,7 @@ if (isset($_GET['status'])) {
             </div>
         <?php endif; ?>
 
-        <label class="display-6 text-center">Choose a route</label>
+        <label class="display-6 text-center"><strong>Choose a route</strong></label>
 
         <div class="container">
             <a href="available_buses.php?route=Going North&status=available" class="btn btn-primary">Going North</a>

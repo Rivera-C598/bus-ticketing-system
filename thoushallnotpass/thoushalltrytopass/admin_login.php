@@ -6,18 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="../../css/styles.css">
+    <style>
+        body {
+            position: relative;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: url("../../img_assets/web-bg.jpg") center no-repeat;
+            background-size: cover;
+        }
+
+        #container {
+            background: rgba(255, 255, 255, 0.19);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+
+            padding: 30px;
+            margin: auto;
+            max-width: 70vh;
+        }
+    </style>
     <title>Admin Login - Bus Ticketing System</title>
 </head>
 
 <body>
     <div class="wrapper">
-        <header class="bg-primary text-white text-center py-5">
-            <div class="container">
-                <h1>Welcome to The Admin Panel</h1>
-            </div>
-        </header>
 
-        <div class="container mt-5">
+
+        <div class="container mt-5" id="container">
             <div class="row justify-content-center">
                 <div class="col-lg-6">
                     <h1 class="text-center">Admin Login</h1>

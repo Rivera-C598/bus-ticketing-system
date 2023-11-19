@@ -28,6 +28,33 @@ try {
 
     <title>Manage Buses - Bus Ticketing System</title>
     <style>
+        .wrapper {
+            position: relative;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: url('../../../../img_assets/web-bg.jpg') center no-repeat;
+            background-size: cover;
+        }
+
+        #table-container,
+        #title {
+            background: rgba(255, 255, 255, 0.19);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+
+        #searchInput {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
         .table tbody tr {
             cursor: pointer;
         }
@@ -47,14 +74,14 @@ try {
 <body>
     <div class="wrapper">
 
-        <div class="container text-center py-3" id="title">
+        <div class="container text-center py-3 mb-3" id="title">
             <h2>Manage Buses</h2>
             <a href="../mirage/admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
             <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#addBusModal">Add a new bus</button>
         </div>
 
 
-        <div class="container">
+        <div class="container" id="table-container">
             <div class="row">
 
                 <div class="input-group py-3">

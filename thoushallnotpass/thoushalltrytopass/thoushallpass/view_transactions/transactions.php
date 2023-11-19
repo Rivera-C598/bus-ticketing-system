@@ -37,6 +37,37 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="../../../../css/styles.css">
     <style>
+        .wrapper {
+            position: relative;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: url('../../../../img_assets/web-bg.jpg') center no-repeat;
+            background-size: cover;
+        }
+
+        #table-container,
+        #title {
+            background: rgba(255, 255, 255, 0.19);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+
+        #searchInput {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .table {
+            background-color: white;
+        }
+
         #title {
             border-bottom: 1px solid #ccc;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -48,22 +79,18 @@ try {
 
 <body>
     <div class="wrapper">
-        <div class="container text-center py-3" id="title">
+        <div class="container text-center py-3 mb-3" id="title">
             <h2>Transaction History</h2>
             <a href="../mirage/admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
         </div>
         <main class="container">
             <section id="admin-panel" class="mb-4 px-3">
-
-
-                <div class="container">
+                <div class="container" id="table-container">
                     <div class="row">
-
-
                         <div class="container mt-5">
                             <form method="GET" action="" class="mb-3">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search..." name="search" value="<?= $searchTerm ?>">
+                                    <input type="text" class="form-control" id="searchInput" placeholder="Search..." name="search" value="<?= $searchTerm ?>">
                                     <button class="btn btn-primary" type="submit">Search</button>
                                 </div>
                             </form>

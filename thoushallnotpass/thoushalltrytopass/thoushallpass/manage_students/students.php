@@ -31,11 +31,43 @@ $paginatedResults = array_slice($results, $startIndex, $itemsPerPage);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-
+    <link rel="stylesheet" href="../../../../css/styles.css">
     <title>Student Reference - Bus Ticketing System</title>
     <style>
+        .wrapper {
+            position: relative;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: url('../../../../img_assets/web-bg.jpg') center no-repeat;
+            background-size: cover;
+        }
+
+        #table-container,
+        #title {
+            background: rgba(255, 255, 255, 0.19);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+
+        #searchInput {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .custom-table {
+            background-color: red;
+        }
+
         .table tbody tr {
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         .table-hover tbody tr:hover {
@@ -52,96 +84,95 @@ $paginatedResults = array_slice($results, $startIndex, $itemsPerPage);
 
 <body>
     <div class="wrapper">
-
-        <div class="container text-center py-3" id="title">
+        <div class="container text-center py-3 mb-3" id="title">
             <h2>Student Reference Table</h2>
             <a href="../mirage/admin_control_panel.php" class="btn btn-outline-primary btn-md">Control Panel</a>
             <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#addStudentModal">Add Student</button>
         </div>
+        <main class="container">
+            <section id="admin-panel" class="mb-4 px-3">
+                <div class="container" id="table-container">
+                    <div class="row">
+                        <div class="container">
+                            <div class="input-group py-3">
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search...">
+                                <button class="btn btn-primary" id="searchButton" type="button">Search</button>
+                                <button class="btn btn-success" id="clearButton" type="button">Refresh</button>
 
-        <!-- add student Modal -->
-        <div class="modal fade" id="addStudentModal" tabindex="-1" role="dialog" aria-labelledby="addStudentModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addStudentModalLabel">Add Student</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="add_student.php" method="post">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
 
-                            <div class="form-group">
-                                <label for="studentId">Student ID:</label>
-                                <input type="text" class="form-control" id="studentId" name="studentId" pattern="[0-9]+" maxlength="7" required>
-                                <small class="form-text text-muted" id="studentIdMessage">Please enter only numeric values, and the length must be 7.</small>
+                            <table class="table table-bordered table-hover custom-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Student Id</th>
+                                        <th scope="col">Student Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($paginatedResults as $row) : ?>
+                                        <tr data-student-id="<?= $row['student_id'] ?>">
+                                            <td class="studentId"><strong><?= $row['student_id'] ?></strong></td>
+                                            <td class="studentName"><?= $row['name'] ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+
+                            <div class="d-flex justify-content-center">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                                            <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                                                <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                            </li>
+                                        <?php endfor; ?>
+                                    </ul>
+                                </nav>
                             </div>
-                            <div class="form-group">
-                                <label for="studentName">Student name:</label>
-                                <input type="text" class="form-control" id="studentName" name="studentName" required>
-                            </div>
-                            <div class="justify-content-center d-flex my-2">
-                                <button type="submit" class="btn btn-primary" id="addStudentBtn" disabled>Confirm</button>
-                            </div>
-                        </form>
+
+
+                        </div>
+
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- add student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" role="dialog" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addStudentModalLabel">Add Student</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="add_student.php" method="post">
+
+                        <div class="form-group">
+                            <label for="studentId">Student ID:</label>
+                            <input type="text" class="form-control" id="studentId" name="studentId" pattern="[0-9]+" maxlength="7" required>
+                            <small class="form-text text-muted" id="studentIdMessage">Please enter only numeric values, and the length must be 7.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentName">Student name:</label>
+                            <input type="text" class="form-control" id="studentName" name="studentName" required>
+                        </div>
+                        <div class="justify-content-center d-flex my-2">
+                            <button type="submit" class="btn btn-primary" id="addStudentBtn" disabled>Confirm</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
-
-
-        <div class="container mt-5">
-            <div class="row">
-
-                <div class="input-group py-3">
-                    <input type="text" class="form-control" id="searchInput" placeholder="Search...">
-                    <button class="btn btn-primary" id="searchButton" type="button">Search</button>
-                    <button class="btn btn-success" id="clearButton" type="button">Refresh</button>
-
-                </div>
-
-                <div class="table-responsive">
-
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">Student Id</th>
-                                <th scope="col">Student Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($paginatedResults as $row) : ?>
-                                <tr data-student-id="<?= $row['student_id'] ?>">
-                                    <td class="studentId"><strong><?= $row['student_id'] ?></strong></td>
-                                    <td class="studentName"><?= $row['name'] ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-
-                    <div class="d-flex justify-content-center">
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination">
-                                <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-                                    <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
-                                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                                    </li>
-                                <?php endfor; ?>
-                            </ul>
-                        </nav>
-                    </div>
-
-
-                </div>
-
-            </div>
-        </div>
-
-
     </div>
 
     <div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsModalLabel" aria-hidden="true">
