@@ -855,6 +855,8 @@ try {
                                 }))
 
                                 confirmAndCancelBtnDiv.append(confirmBtn, cancelBtn);
+
+
                                 ticketForm.append(confirmAndCancelBtnDiv);
 
                                 busDetailsContainer.append(schoolIdStopContainer);
@@ -1043,7 +1045,7 @@ try {
                                     ticketData = [];
                                     schoolIdStopContainer.hide();
                                     $('#ticketCountInput').val('');
-
+                                    confirmAndCancelBtnDiv.empty();
                                     ticketCountContainer.show();
 
                                 })
@@ -1868,7 +1870,7 @@ try {
                                     ticketData = [];
                                     schoolIdStopContainer.hide();
                                     $('#ticketCountInput').val('');
-
+                                    confirmAndCancelBtnDiv.empty();
                                     ticketCountContainer.show();
 
                                 })
