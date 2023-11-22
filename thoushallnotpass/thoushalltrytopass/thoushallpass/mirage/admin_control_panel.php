@@ -10,8 +10,7 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
 
 
 include '../../../../database_config/db_config.php';
-
-date_default_timezone_set('Asia/Manila');
+include '../../../../time/time_conf.php';
 $currentTimestamp = date('Y-m-d H:i:s');
 
 $sql = "
