@@ -27,8 +27,11 @@ if ($stmt->execute()) {
 }*/
 
 require '../../../../database_config/db_config.php';
+include '../../../../time/time_conf.php';
 
 if (isset($_FILES['busPhoto'])) {
+    $currentDateTime = date('Y-m-d H:i:s');
+
     $uploadDir = '../../../../uploads/';  //folder for photos
     $defaultImage = '../../../../uploads/default_bus.png';
     $uploadFile = $uploadDir . basename($_FILES['busPhoto']['name']);
@@ -71,6 +74,8 @@ if (isset($_FILES['busPhoto'])) {
 
     $contactNum = "+63" . $contactNum;
 
+    $createdAt = $currentDateTime;
+    $updatedAt = $currentDateTime;
 
     if (!isValidPhoneNumber($contactNum)) {
         $response = array('status' => 'invalid phone number');
@@ -88,10 +93,10 @@ if (isset($_FILES['busPhoto'])) {
     $status = "unavailable";
 
     //insert data
-    $query = "INSERT INTO buses (plate_number, bus_driver_name, driver_contact_num, route, capacity, air_conditioned, busPhoto, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO buses (plate_number, bus_driver_name, driver_contact_num, route, capacity, air_conditioned, busPhoto, created_at, updated_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($query);
 
-    if ($stmt->execute([$plateNumber, $driverName, $contactNum, $route, $capacity, $air_conditioned, $uploadFile, $status])) {
+    if ($stmt->execute([$plateNumber, $driverName, $contactNum, $route, $capacity, $air_conditioned, $uploadFile, $createdAt, $updatedAt, $status])) {
         $response = array('status' => 'success');
         echo json_encode($response);
         exit();

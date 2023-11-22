@@ -1,7 +1,11 @@
 <?php
 include '../../../../database_config/db_config.php';
+include '../../../../time/time_conf.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $currentDateTime = date('Y-m-d H:i:s');
+
     $busId = $_POST['busId'];
     $plateNumber = $_POST['editPlateNumber'];
     $driverName = $_POST['editDriverName'];
@@ -51,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-    $query = "UPDATE buses SET plate_number = :plateNumber, bus_driver_name = :driverName, driver_contact_num = :driverContactNum, route = :route, capacity = :capacity, air_conditioned = :airConditioned, busPhoto = :busPhoto
+    $query = "UPDATE buses SET plate_number = :plateNumber, bus_driver_name = :driverName, driver_contact_num = :driverContactNum, route = :route, capacity = :capacity, air_conditioned = :airConditioned, busPhoto = :busPhoto, updated_at = :updatedAt
           WHERE bus_id = :busId";
 
     $stmt = $pdo->prepare($query);
@@ -62,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindValue(':capacity', $capacity);
     $stmt->bindValue(':airConditioned', $airConditioned);
     $stmt->bindValue(':busPhoto', $busPhoto);
+    $stmt->bindValue(':updatedAt', $currentDateTime);
     $stmt->bindValue(':busId', $busId);
 
     if ($stmt->execute()) {
