@@ -1,16 +1,16 @@
 <?php
+header('Content-Type: application/json');
 include '../../../../database_config/db_config.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
         //get json from post
         $ticketDataJson = $_POST['ticketData'];
-
         //decode json to array
         $ticketData = json_decode($ticketDataJson, true);
 
         //process ticket time
-        foreach ($ticketData as $ticket) {
+        foreach ($ticketData as &$ticket) {
             $ticketCode = $ticket['ticketCode'];
             $busPlateNumber = $ticket['busPlateNumber'];
             $studentId = $ticket['schoolId'];
@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $fare = $ticket['fare'];
             $isStudentVerified = $ticket['isStudentVerified'];
             $lastRequestStatus = $ticket['lastBookingStatus'];
+
+            $transactionCode = "";
 
             if ($isStudentVerified) {
 
@@ -39,12 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     if ($confirmedTickets < $capacity) {
                         $updateSql = "UPDATE buses SET confirmed_tickets = confirmed_tickets + 1 WHERE plate_number = :bus_plate_number";
-                        echo "Still not full\n";
                     }
 
 
                     $userToken = 'Cashier';
                     $transactionCode = generateUniqueTransactionCode();
+                    $ticket['transactionCode'] = $transactionCode;
                     $ticketExpirationTimestamp = date('Y-m-d H:i:s', strtotime('+2 hours'));
                     $status = 'paid';
 
@@ -94,8 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $updateStmt->bindParam(':bus_plate_number', $busPlateNumber);
                             $updateStmt->execute();
                         }
-
-                        echo json_encode(['success' => true]);
                     } else {
                         echo json_encode(['error' => 'Insertion Failed']);
                     }
@@ -118,7 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     if ($confirmedTickets < $capacity) {
                         $updateSql = "UPDATE buses SET confirmed_tickets = confirmed_tickets + 1 WHERE plate_number = :bus_plate_number";
-                        echo "Still not full\n";
                     }
 
 
@@ -130,6 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     $userToken = 'Cashier';
                     $transactionCode = generateUniqueTransactionCode();
+                    $ticket['transactionCode'] = $transactionCode;
                     $ticketExpirationTimestamp = date('Y-m-d H:i:s', strtotime('+2 hours'));
                     $status = 'paid';
 
@@ -172,9 +172,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $updateStmt->bindParam(':bus_plate_number', $busPlateNumber);
                             $updateStmt->execute();
                         }
-
-
-                        echo json_encode(['success' => true]);
                     } else {
                         echo json_encode(['error' => 'Insertion Failed']);
                     }
@@ -198,11 +195,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 if ($confirmedTickets < $capacity) {
                     $updateSql = "UPDATE buses SET confirmed_tickets = confirmed_tickets + 1 WHERE plate_number = :bus_plate_number";
-                    echo "Still not full\n";
                 }
 
                 $userToken = 'Cashier';
                 $transactionCode = generateUniqueTransactionCode();
+                $ticket['transactionCode'] = $transactionCode;
                 $status = 'paid';
 
                 $insertBookingQuery = "INSERT INTO bookings (transaction_code, ticket, user_token, bus_plate_number, stop, student_id, fare, status, paid_at) VALUES (:transaction_code, :ticket, :user_token, :bus_plate_number, :stop, :student_id, :fare, :status, NOW())";
@@ -241,12 +238,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $updateStmt->bindParam(':bus_plate_number', $busPlateNumber);
                         $updateStmt->execute();
                     }
-                    echo json_encode(['success' => true]);
                 } else {
                     echo json_encode(['error' => 'Insertion Failed']);
                 }
             }
         }
+        unset($ticket);
+        $response = ['success' => true, 'ticketData' => $ticketData];
+        echo json_encode($response);
     } catch (PDOException $e) {
         echo 'Error: ' . $e->getMessage();
     }

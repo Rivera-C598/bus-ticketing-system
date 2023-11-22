@@ -3,6 +3,9 @@ session_start();
 if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     header("Location: ../../admin_login.php");
     exit();
+} else {
+    $adminId = $_SESSION['admin_id'];
+    $adminName = $_SESSION['admin_name'];
 }
 
 
@@ -111,7 +114,7 @@ try {
     <div class="wrapper">
         <header class="bg-dark text-white text-center py-3">
             <div class="container">
-                <h1>Control Panel</h1>
+                <h1>Welcome, <span id="currentAdmin"><?php echo $adminName ?></span></h1>
             </div>
         </header>
         <main class="container">
@@ -355,6 +358,10 @@ try {
 
                 var ticket = $('#modalTicket').text();
                 var busPlateNumber = $('#modalBusPlateNumber').text();
+                var stop = $('#modalStop').text();
+                var studentID = $('#modalStudentID').text();
+                var fare = $('#modalFare').text();
+
 
                 $.ajax({
                     type: 'POST',
@@ -363,21 +370,71 @@ try {
                         ticket: ticket,
                         busPlateNumber: busPlateNumber
                     },
+                    dataType: 'json',
                     success: function(response) {
-                        if (response === 'success') {
+                        if (response.status === 'success') {
+                            var transactionCode = response.transactionCode;
+
+                            printReceipt({
+                                ticket: ticket,
+                                busPlateNumber: busPlateNumber,
+                                stop: stop,
+                                studentID: studentID,
+                                fare: fare,
+                                todaysDate: getFormattedDateTime(),
+                                adminName: $('#currentAdmin').text(),
+                                transactionCode: transactionCode
+                            });
+
                             $('#bookingModal').modal('hide');
                             $('tr[data-ticket-code="' + ticket + '"]').remove();
-                            $('#successModal').modal('show');
-                        } else if (response === 'error: Bus not found') {
+
+                        } else if (response.status === 'error: Bus not found') {
                             $('#bookingModal').modal('hide');
                             $('#busFullOrUnavailableModal').modal('show');
                         } else {
-                            alert('bus unavailable');
+                            alert('Unexpected error occured');
                         }
                     }
                 });
             });
 
+            function printReceipt(data) {
+                var printWindow = window.open('', '_blank');
+
+                var receiptContent = `
+                    <div>
+                        <p><strong>--------------- CTU-Danao [ Bus Ride Ticket ] ------------------</strong></p>
+                        <p><strong>Bus: [${data.busPlateNumber}] </strong>| <strong>Ticket# [${data.ticket}]</strong></p>
+                        <p><strong>Student ID:</strong> ${data.studentID} | <strong>Stop:</strong> ${data.stop} | Php${data.fare}.00</p>
+                        <p><strong>Receipt#:</strong> ${data.transactionCode} | <strong>Date:</strong> ${data.todaysDate}</p>
+                        <p><strong>Cashier: </strong> ${data.adminName}</p>
+                        <p><strong>Thanks for riding with us! :D</strong></p>
+                        <p>--------------------------------online-----------------------------------</p>
+                    </div>
+                `;
+
+                printWindow.document.write(receiptContent);
+                printWindow.document.close();
+                printWindow.print();
+                printWindow.close();
+            }
+
+            function getFormattedDateTime() {
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0');
+                var yyyy = today.getFullYear();
+                var hh = today.getHours();
+                var min = String(today.getMinutes()).padStart(2, '0');
+                var sec = String(today.getSeconds()).padStart(2, '0');
+
+                var ampm = hh >= 12 ? 'PM' : 'AM';
+                hh = hh % 12;
+                hh = hh ? hh : 12;
+
+                return mm + '/' + dd + '/' + yyyy + ' ' + hh + ':' + min + ':' + sec + ' ' + ampm;
+            }
 
         });
     </script>
@@ -1156,39 +1213,85 @@ try {
 
                                 $('#confirmPrintButton').on('click', function() {
                                     if (ticketData.length > 0) {
-                                        console.log('theres ticketData')
                                         $.ajax({
                                             url: 'admin_process_tickets.php',
                                             type: 'POST',
                                             data: {
                                                 ticketData: JSON.stringify(ticketData)
                                             },
+                                            dataType: 'json',
                                             success: function(response) {
-                                                $('#successModal').modal('show');
+                                                var tickets = response.ticketData;
+                                                console.log(response);
+
+                                                if (tickets && tickets.length > 0) {
+                                                    var printWindow = window.open('', '_blank');
+
+                                                    var allTicketsHtml = tickets.map(function(ticket) {
+                                                        return getTicketHtml(ticket, getFormattedDateTime());
+                                                    }).join('');
+
+                                                    printWindow.document.write(allTicketsHtml);
+                                                    printWindow.document.close();
+                                                    printWindow.print();
+                                                    printWindow.close();
+
+                                                    currentTicketIndex = 0;
+                                                    ticketData = [];
+                                                    schoolIdStopContainer.hide();
+                                                    ticketCountContainer.show();
+                                                    $('#ticketCountInput').val('');
+                                                    $('#studentExistingBookingStatus').val('');
+                                                    $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                                    $('#summaryModal').modal('hide');
+                                                    location.reload();
+                                                } else {
+                                                    console.error('No ticket data received');
+                                                }
                                             },
                                             error: function(error) {
                                                 console.error(error);
                                             }
                                         });
-
-                                        currentTicketIndex = 0;
-                                        ticketData = [];
-                                        schoolIdStopContainer.hide();
-                                        ticketCountContainer.show();
-                                        $('#ticketCountInput').val('');
-                                        $('#studentExistingBookingStatus').val('');
-                                        $('#hasNotPassedCooldownPeriodErrorMessage').text('');
-
-
-                                        $('#summaryModal').modal('hide');
                                     } else {
                                         console.log('No ticket data to confirm and print.');
-
+                                        $('#summaryModal').modal('hide');
                                     }
-
-                                    //close modal
-                                    $('#summaryModal').modal('hide');
                                 });
+
+                                function getTicketHtml(ticket, todaysDate) {
+                                    var ticketHtml = `
+                                    <div class="ticket-container">
+                                        <p><strong>---------------- CTU-Danao [ Bus Ride Ticket ] ----------------</strong></p>
+                                        <p><strong>Bus: [${ticket.busPlateNumber}] </strong>| <strong>Ticket# [${ticket.ticketCode}]</strong></p>
+                                        <p><strong>Student ID:</strong> ${ticket.schoolId} | <strong>Stop:</strong> ${ticket.stop} | Php${ticket.fare}</p>
+                                        <p><strong>Receipt#:</strong> ${ticket.transactionCode} | <strong>Date:</strong> ${todaysDate}</p>
+                                        <p><strong>Cashier: </strong> <?php echo $adminName ?></p>
+                                        <p><strong>Thanks for riding with us! :D</strong></p>
+                                        <p>------------------------------- cashier ---------------------------------</p>
+                                    </div>
+    `;
+                                    return ticketHtml;
+                                }
+
+
+                                function getFormattedDateTime() {
+                                    var today = new Date();
+                                    var dd = String(today.getDate()).padStart(2, '0');
+                                    var mm = String(today.getMonth() + 1).padStart(2, '0');
+                                    var yyyy = today.getFullYear();
+                                    var hh = today.getHours();
+                                    var min = String(today.getMinutes()).padStart(2, '0');
+                                    var sec = String(today.getSeconds()).padStart(2, '0');
+
+                                    var ampm = hh >= 12 ? 'PM' : 'AM';
+                                    hh = hh % 12;
+                                    hh = hh ? hh : 12;
+
+                                    return mm + '/' + dd + '/' + yyyy + ' ' + hh + ':' + min + ':' + sec + ' ' + ampm;
+                                }
+
+
                             }
 
                         } else {
@@ -1210,13 +1313,7 @@ try {
 
                                 slot_error.text("That's more than the available slots. Are you trying to take the bus driver's seat too?");
                             }
-
-
-
                         }
-
-
-
 
                     });
 
@@ -1983,39 +2080,83 @@ try {
 
                                 $('#confirmPrintButton').on('click', function() {
                                     if (ticketData.length > 0) {
-                                        console.log('theres ticketData')
                                         $.ajax({
                                             url: 'admin_process_tickets.php',
                                             type: 'POST',
                                             data: {
                                                 ticketData: JSON.stringify(ticketData)
                                             },
+                                            dataType: 'json',
                                             success: function(response) {
-                                                $('#successModal').modal('show');
+                                                var tickets = response.ticketData;
+                                                console.log(response);
+
+                                                if (tickets && tickets.length > 0) {
+                                                    var printWindow = window.open('', '_blank');
+
+                                                    var allTicketsHtml = tickets.map(function(ticket) {
+                                                        return getTicketHtml(ticket, getFormattedDateTime());
+                                                    }).join('');
+
+                                                    printWindow.document.write(allTicketsHtml);
+                                                    printWindow.document.close();
+                                                    printWindow.print();
+                                                    printWindow.close();
+
+                                                    currentTicketIndex = 0;
+                                                    ticketData = [];
+                                                    schoolIdStopContainer.hide();
+                                                    ticketCountContainer.show();
+                                                    $('#ticketCountInput').val('');
+                                                    $('#studentExistingBookingStatus').val('');
+                                                    $('#hasNotPassedCooldownPeriodErrorMessage').text('');
+                                                    $('#summaryModal').modal('hide');
+                                                    location.reload();
+                                                } else {
+                                                    console.error('No ticket data received');
+                                                }
                                             },
                                             error: function(error) {
                                                 console.error(error);
                                             }
                                         });
-
-                                        currentTicketIndex = 0;
-                                        ticketData = [];
-                                        schoolIdStopContainer.hide();
-                                        ticketCountContainer.show();
-                                        $('#ticketCountInput').val('');
-                                        $('#studentExistingBookingStatus').val('');
-                                        $('#hasNotPassedCooldownPeriodErrorMessage').text('');
-
-
-                                        $('#summaryModal').modal('hide');
                                     } else {
                                         console.log('No ticket data to confirm and print.');
-
+                                        $('#summaryModal').modal('hide');
                                     }
-
-                                    //close modal
-                                    $('#summaryModal').modal('hide');
                                 });
+
+                                function getTicketHtml(ticket, todaysDate) {
+                                    var ticketHtml = `
+                                    <div class="ticket-container">
+                                        <p><strong>---------------- CTU-Danao [ Bus Ride Ticket ] ----------------</strong></p>
+                                        <p><strong>Bus: [${ticket.busPlateNumber}] </strong>| <strong>Ticket# [${ticket.ticketCode}]</strong></p>
+                                        <p><strong>Student ID:</strong> ${ticket.schoolId} | <strong>Stop:</strong> ${ticket.stop} | Php${ticket.fare}</p>
+                                        <p><strong>Receipt#:</strong> ${ticket.transactionCode} | <strong>Date:</strong> ${todaysDate}</p>
+                                        <p><strong>Cashier: </strong> <?php echo $adminName ?></p>
+                                        <p><strong>Thanks for riding with us! :D</strong></p>
+                                        <p>------------------------------- cashier ---------------------------------</p>
+                                    </div>
+    `;
+                                    return ticketHtml;
+                                }
+
+
+                                function getFormattedDateTime() {
+                                    var today = new Date();
+                                    var dd = String(today.getDate()).padStart(2, '0');
+                                    var mm = String(today.getMonth() + 1).padStart(2, '0');
+                                    var yyyy = today.getFullYear();
+                                    var hh = today.getHours();
+                                    var min = String(today.getMinutes()).padStart(2, '0');
+                                    var sec = String(today.getSeconds()).padStart(2, '0');
+
+                                    var ampm = hh >= 12 ? 'PM' : 'AM';
+                                    hh = hh % 12;
+                                    hh = hh ? hh : 12;
+
+                                    return mm + '/' + dd + '/' + yyyy + ' ' + hh + ':' + min + ':' + sec + ' ' + ampm;
+                                }
                             }
 
                         } else {

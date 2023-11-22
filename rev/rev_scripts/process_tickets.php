@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $lastRequestTimestamp = strtotime($lastRequest);
                     $timeElapsed = $currentTimestamp - $lastRequestTimestamp;
                     //set cooldown time
-                    $cooldownPeriod = 2 * 60 * 60; //2 * 60 * 60 (2 hours)
+                    $cooldownPeriod = 1 * 60; //2 * 60 * 60 (2 hours)
                     // step 2: check if timeElapsed >= cooldownPeriod (timeElapsed should be greater than the cooldown time so that the student can request another ticket again))
                     if ($timeElapsed >= $cooldownPeriod) {
                         // If cooldown period has passed, we proceed with new booking

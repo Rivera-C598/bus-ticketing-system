@@ -24,10 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (verifyPassword($enteredPassword, $storedPassword, $salt)) {
                 //password goods, admin login successful
                 //start a session, only authenticated admins can cum
-                session_start();
-                $_SESSION['authenticated'] = true;
-                header('Location: thoushallpass/mirage/admin_control_panel.php');
-                exit();
+                $query = $conn->prepare('SELECT id, full_name FROM admin_users WHERE username = :enteredUsername');
+                $query->bindParam(':enteredUsername', $enteredUsername);
+                $query->execute();
+                $result = $query->fetch(PDO::FETCH_ASSOC);
+                if ($result) {
+                    session_start();
+                    $_SESSION['admin_id'] = $result['id'];
+                    $_SESSION['admin_name'] = $result['full_name'];
+                    $_SESSION['authenticated'] = true;
+                    header('Location: thoushallpass/mirage/admin_control_panel.php');
+                    exit();
+                }
             } else {
                 header('Location: ../../info/error_page.php?error=invalid_credentials');
             }

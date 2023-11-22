@@ -2,11 +2,7 @@ body {
   padding: 20px;
   margin: 0;
   padding-top: 70px;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: url("../img_assets/web-bg.jpg") center no-repeat;
-  background-size: cover;
+  
 }
 
 .wrapper {

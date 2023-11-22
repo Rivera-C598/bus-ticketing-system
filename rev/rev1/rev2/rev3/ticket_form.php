@@ -17,18 +17,11 @@
         }
 
         .container {
-            max-width: 400px;
+            max-width: 600px;
             border: 1px solid #ccc;
             border-radius: 15px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
-            margin: 20px auto;
-            max-width: 50vh;
         }
     </style>
     <title>Bus Ticketing System - Book tickets</title>

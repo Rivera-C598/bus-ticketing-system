@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ticket']) && isset($_
                     $confirmedTickets = $busData['confirmed_tickets'];
                     $busStatus = $busData['status'];
                 } else {
-                    echo 'error: Bus not found';
+                    echo json_encode(['status' => 'error: Bus not found']);
                 }
 
                 if ($confirmedTickets == $capacity) {
@@ -58,11 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ticket']) && isset($_
                     $updateStmt->bindParam(':bus_plate_number', $busPlateNumber);
                     $updateStmt->execute();
                 }
-                echo 'success';
+                echo json_encode(['status' => 'success', 'transactionCode' => $transactionCode]);
             }
         }
     } else {
-        echo 'error: Bus not found';
+        echo json_encode(['status' => 'error: Bus not found']);
     }
 }
 

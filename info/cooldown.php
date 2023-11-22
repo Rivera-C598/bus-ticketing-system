@@ -33,6 +33,7 @@
             padding: 10px;
             border-top-left-radius: 5px;
             border-top-right-radius: 5px;
+            
         }
 
         .ticket-title {
