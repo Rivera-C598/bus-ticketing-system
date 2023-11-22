@@ -41,19 +41,17 @@ function checkForSchoolIdAndLastRequestStatus($schoolId)
                 $lastRequestTimestamp = strtotime($lastRequest);
                 $timeElapsed = $currentTimestamp - $lastRequestTimestamp;
 
-                //10 min cooldown - should be 2 hours, but for now, set for 10 mins
-                $cooldownPeriod = 10 * 60;
+                //2 hr cooldown
+                $cooldownPeriod = 2 * 60 * 60;
 
                 if ($timeElapsed >= $cooldownPeriod) {
                     return ['schoolIdExists' => true, 'lastRequestStatus' => true, 'passedCooldownPeriod' => true];
-                }else{
+                } else {
                     return ['schoolIdExists' => true, 'lastRequestStatus' => true, 'passedCooldownPeriod' => false];
                 }
             }
-
         } else {
             return ['schoolIdExists' => false, 'lastRequestStatus' => false, 'passedCooldownPeriod' => false];
         }
     }
 }
-?>

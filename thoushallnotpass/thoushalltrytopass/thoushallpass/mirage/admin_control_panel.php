@@ -1311,7 +1311,7 @@ try {
 
                                 var slot_error = $('#available_seats_error');
 
-                                slot_error.text("That's more than the available slots. Are you trying to take the bus driver's seat too?");
+                                slot_error.text("Error: that's more than the available slots.");
                             }
                         }
 

@@ -13,14 +13,13 @@ foreach ($users as $user) {
 
     $salt = generateUniqueSalt();
 
-    $hashedPassword = hashPassword($plainPassword, $salt);  
+    $hashedPassword = hashPassword($plainPassword, $salt);
 
     $updateStmt = $pdo->prepare("UPDATE admin_users SET password = :hashedPassword, salt = :salt WHERE id = :userId");
     $updateStmt->bindParam(':hashedPassword', $hashedPassword);
-    $updateStmt->bindParam(':salt', $salt);  
+    $updateStmt->bindParam(':salt', $salt);
     $updateStmt->bindParam(':userId', $userId);
     $updateStmt->execute();
 }
 
-echo "Passwords hashed and salted orayt";
-?>
+echo "Success, passwords have been hashed and salted.";
