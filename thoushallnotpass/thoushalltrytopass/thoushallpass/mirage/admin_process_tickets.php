@@ -221,9 +221,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $insertBookingStmt->bindParam(':stop', $stop);
                 $insertBookingStmt->bindParam(':student_id', $studentId);
                 $insertBookingStmt->bindParam(':fare', $fare);
-                $insertBookingStmt->bindParam(':booked_at', $fare);
+                $insertBookingStmt->bindParam(':booked_at', $currentDateTime);
                 $insertBookingStmt->bindParam(':status', $status);
-                $insertBookingStmt->bindParam(':paid_at', $fare);
+                $insertBookingStmt->bindParam(':paid_at', $currentDateTime);
 
                 if ($insertBookingStmt->execute()) {
                     $updateStmt = $pdo->prepare($updateSql);
