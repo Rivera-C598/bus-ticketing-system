@@ -1,7 +1,10 @@
 <?php
 include '../../database_config/db_config.php';
+include '../../time/time_conf.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $currentDateTime = date('Y-m-d H:i:s');
     //get bus id
     $busId = $_POST['busId'];
     //get bus details based on bus id
@@ -65,13 +68,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $cooldownStmt->execute();
                 $lastRequest = $cooldownStmt->fetch(PDO::FETCH_ASSOC)['last_request'];
 
-                // set timezone to asia/manila 
-                date_default_timezone_set('Asia/Manila');
-
                 if (!$lastRequest) {
-                    $insertTicketRequestQuery = "INSERT INTO ticket_requests (student_id, request_timestamp) VALUES (:studentId, NOW())";
+                    $insertTicketRequestQuery = "INSERT INTO ticket_requests (student_id, request_timestamp) VALUES (:studentId, :currentDateTime)";
                     $requestStmt = $pdo->prepare($insertTicketRequestQuery);
                     $requestStmt->bindParam(':studentId', $studentId);
+                    $requestStmt->bindParam(':currentDateTime', $currentDateTime);
                     $requestStmt->execute();
                     // then we proceed to the bookigns
                     if (array_key_exists($stop, $baseFares) && $baseFares[$stop] == $fare) {
@@ -84,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $ticketExpirationTimestamp = date('Y-m-d H:i:s', strtotime('+2 hours'));
 
                         //snsert into bookings table
-                        $insertBookingQuery = "INSERT INTO bookings (ticket, user_token, ticket_expiration_timestamp, bus_plate_number, stop, student_id, fare, status) VALUES (:ticket, :user_token, :ticket_expiration_timestamp, :bus_plate_number, :stop, :student_id, :fare, :status)";
+                        $insertBookingQuery = "INSERT INTO bookings (ticket, user_token, ticket_expiration_timestamp, bus_plate_number, stop, student_id, fare,  booked_at, status) VALUES (:ticket, :user_token, :ticket_expiration_timestamp, :bus_plate_number, :stop, :student_id, :fare, :currentDateTime, :status)";
                         $insertBookingStmt = $pdo->prepare($insertBookingQuery);
                         $insertBookingStmt->bindParam(':ticket', $ticketCode);
                         $insertBookingStmt->bindParam(':user_token', $userToken);
@@ -93,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $insertBookingStmt->bindParam(':stop', $stop);
                         $insertBookingStmt->bindParam(':student_id', $studentId);
                         $insertBookingStmt->bindParam(':fare', $fare);
+                        $insertBookingStmt->bindParam(':currentDateTime', $currentDateTime);
                         $insertBookingStmt->bindParam(':status', $status);
 
                         if ($insertBookingStmt->execute()) {
@@ -109,9 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     //if it is then we update new record
 
                     // step 1: calculate cooldown time
-                    $currentTimestamp = time();
+                    $currentTime = strtotime(date('Y-m-d H:i:s'));
                     $lastRequestTimestamp = strtotime($lastRequest);
-                    $timeElapsed = $currentTimestamp - $lastRequestTimestamp;
+                    $timeElapsed = $currentTime - $lastRequestTimestamp;
                     //set cooldown time
                     $cooldownPeriod = 2 * 60 * 60; //2 * 60 * 60 (2 hours)
                     // step 2: check if timeElapsed >= cooldownPeriod (timeElapsed should be greater than the cooldown time so that the student can request another ticket again))
@@ -128,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $ticketExpirationTimestamp = date('Y-m-d H:i:s', strtotime('+2 hours'));
 
                             //insert into bookings table
-                            $insertBookingQuery = "INSERT INTO bookings (ticket, user_token, ticket_expiration_timestamp, bus_plate_number, stop, student_id, fare, status) VALUES (:ticket, :user_token, :ticket_expiration_timestamp, :bus_plate_number, :stop, :student_id, :fare, :status)";
+                            $insertBookingQuery = "INSERT INTO bookings (ticket, user_token, ticket_expiration_timestamp, bus_plate_number, stop, student_id, fare, booked_at, status) VALUES (:ticket, :user_token, :ticket_expiration_timestamp, :bus_plate_number, :stop, :student_id, :fare, :currentDateTime, :status)";
                             $insertBookingStmt = $pdo->prepare($insertBookingQuery);
                             $insertBookingStmt->bindParam(':ticket', $ticketCode);
                             $insertBookingStmt->bindParam(':user_token', $userToken);
@@ -137,13 +139,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $insertBookingStmt->bindParam(':stop', $stop);
                             $insertBookingStmt->bindParam(':student_id', $studentId);
                             $insertBookingStmt->bindParam(':fare', $fare);
+                            $insertBookingStmt->bindParam(':currentDateTime', $currentDateTime);
                             $insertBookingStmt->bindParam(':status', $status);
 
                             if ($insertBookingStmt->execute()) {
 
                                 //we update existing student record with this:
-                                $updateTicketRequestQuery = "UPDATE ticket_requests SET request_timestamp = NOW() WHERE student_id = :studentId";
+                                $updateTicketRequestQuery = "UPDATE ticket_requests SET request_timestamp = :currentDateTime WHERE student_id = :studentId";
                                 $requestStmt = $pdo->prepare($updateTicketRequestQuery);
+                                $requestStmt->bindParam(':currentDateTime', $currentDateTime);
                                 $requestStmt->bindParam(':studentId', $studentId);
                                 $requestStmt->execute();
 

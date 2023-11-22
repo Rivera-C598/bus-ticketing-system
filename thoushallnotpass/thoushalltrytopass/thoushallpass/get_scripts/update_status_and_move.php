@@ -1,7 +1,11 @@
 <?php
 include '../../../../database_config/db_config.php';
+include '../../../../time/time_conf.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ticket']) && isset($_POST['busPlateNumber'])) {
+
+    $currentDateTime = date('Y-m-d H:i:s');
+
     $ticket = $_POST['ticket'];
     $busPlateNumber = $_POST['busPlateNumber'];
 
@@ -23,10 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ticket']) && isset($_
             //if bus still aint full
             $transactionCode = generateUniqueTransactionCode();
 
-            $updateBookingSql = "UPDATE bookings SET status = 'paid', transaction_code = :transaction_code, paid_at = NOW() WHERE ticket = :ticket";
+            $updateBookingSql = "UPDATE bookings SET status = 'paid', transaction_code = :transaction_code, paid_at = :currentDateTime WHERE ticket = :ticket";
             $updateBookingStmt = $pdo->prepare($updateBookingSql);
             $updateBookingStmt->bindParam(':ticket', $ticket);
             $updateBookingStmt->bindParam(':transaction_code', $transactionCode);
+            $updateBookingStmt->bindParam(':currentDateTime', $currentDateTime);
 
             if ($updateBookingStmt->execute()) {
 
